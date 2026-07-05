@@ -1,0 +1,277 @@
+/**
+ * Identidade visual — Profª Joyce Neres
+ * Extraída de: https://joycenereseva.github.io/guiademedidas/
+ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+  --verde: #4A7C62;
+  --verde-dark: #2d4f3e;
+  --verde-light: #8aba9e;
+  --creme: #F0EDE6;
+  --cinza: #7A7A7A;
+  --preto: #1A1A1A;
+  --bg: #F7F5F0;
+  --hero-bg: #18181B;
+  --card-bg: #FFFFFF;
+  --card-border: #e8f5ee;
+  --input-bg: #f9fafb;
+  --input-border: #e5e7eb;
+  --focus-ring: rgba(74, 124, 98, 0.12);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--bg);
+  color: var(--preto);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif-brand {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.section-title {
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 4px;
+  background-color: var(--verde);
+}
+
+.main-title {
+  color: var(--verde-light);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-left: 4px solid var(--verde);
+  color: var(--preto);
+  box-shadow: 0 4px 16px rgba(26, 26, 26, 0.06);
+}
+
+.card p,
+.card .text-gray-400 {
+  color: var(--cinza) !important;
+}
+
+.icon {
+  color: var(--verde);
+}
+
+.nav-button {
+  background-color: var(--verde);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(74, 124, 98, 0.25);
+  cursor: pointer;
+  display: inline-block;
+}
+
+.nav-button:hover {
+  background-color: var(--verde-dark);
+  transform: scale(1.02);
+}
+
+.site-header {
+  background: var(--preto);
+  color: white;
+}
+
+.hero-section {
+  background: var(--hero-bg);
+  color: white;
+}
+
+.hero-accent {
+  color: var(--verde-light);
+}
+
+.highlight-box {
+  background: var(--card-border);
+  border-left: 4px solid var(--verde);
+}
+
+.timer-page {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: var(--hero-bg);
+  color: var(--creme);
+}
+
+.timer-display {
+  font-size: 5rem;
+  font-weight: 900;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1rem;
+}
+
+.phase-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 0.5rem;
+}
+
+.set-display {
+  font-size: 1.5rem;
+  color: var(--verde-light);
+  margin-bottom: 2rem;
+}
+
+.timer-controls button {
+  background-color: transparent;
+  color: var(--verde-light);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  margin: 0.5rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--verde);
+  flex-grow: 1;
+  min-width: 100px;
+}
+
+.timer-controls button:hover:not(:disabled) {
+  background-color: var(--verde);
+  color: white;
+}
+
+.timer-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.config-section {
+  background-color: rgba(255, 255, 255, 0.06);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 700px;
+  border: 1px solid rgba(138, 186, 158, 0.35);
+}
+
+.phase-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(138, 186, 158, 0.25);
+}
+
+.phase-item > div {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.phase-item input[type="text"],
+.phase-item input[type="number"],
+.phase-item select,
+.config-section select {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--creme);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 0.5rem;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.phase-item input:focus,
+.phase-item select:focus,
+.config-section select:focus {
+  outline: none;
+  border-color: var(--verde-light);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.phase-item button.remove-phase-btn {
+  background-color: #c53030;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.add-phase-btn {
+  background-color: var(--verde);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+.add-phase-btn:hover {
+  background-color: var(--verde-dark);
+}
+
+.save-load-buttons button {
+  background-color: var(--verde-dark);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  margin: 0.5rem;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 300px;
+  max-height: 400px;
+}
+
+@media (min-width: 768px) {
+  .chart-container {
+    height: 350px;
+  }
+}
+
+@media (max-width: 767px) {
+  .phase-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .phase-item > div,
+  .phase-item button {
+    width: 100%;
+  }
+}
+
+.site-footer {
+  background: #000;
+  border-top: 4px solid var(--verde);
+  color: white;
+}
+
+#mobile-menu {
+  transition: transform 0.3s ease-in-out;
+}
