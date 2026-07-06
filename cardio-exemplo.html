@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo de Cardio - Maria | Profª Joyce Neres</title>
+    <title>Protocolo de Cardio - Vitória | Profª Joyce Neres</title>
     <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carrega Chart.js para gráficos -->
@@ -13,6 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
         :root {
             --verde: #4A7C62;
             --verde-dark: #2d4f3e;
@@ -29,10 +31,27 @@
             color: var(--preto);
         }
 
+        .hero-display-title,
+        .hero-display-title .hero-accent {
+            font-family: 'Playfair Display', serif !important;
+            font-style: italic !important;
+            font-weight: 900 !important;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero-display-title {
+            color: var(--preto);
+        }
+
+        .hero-display-title .hero-accent {
+            color: var(--verde);
+        }
+
         .main-title {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-weight: 900;
+            font-family: 'Playfair Display', serif !important;
+            font-style: italic !important;
+            font-weight: 900 !important;
             color: var(--preto);
             letter-spacing: -0.02em;
             line-height: 1.1;
@@ -300,7 +319,7 @@
     </style>
     <script>
         window.STUDENT_ACCESS = {
-            nome: 'Maria Silva',
+            nome: 'Vitória Silva',
             acessoValidoAte: '2026-12-31',
             bloqueioAtivo: true
         };
@@ -352,14 +371,14 @@
                 <!-- Informações do aluno e objetivo -->
                 <div class="text-center mb-10 mt-4">
                     <p class="text-sm uppercase tracking-widest font-bold mb-2" style="color: var(--verde-light)">Protocolo personalizado</p>
-                    <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: <span id="student-name">Maria Silva</span></p>
+                    <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: <span id="student-name">Vitória Silva</span></p>
                     <p class="text-md md:text-lg mt-1" style="color: var(--cinza)">Objetivo: <span id="student-objective">Melhoria da Composição Corporal</span></p>
                     <p class="mt-4"><span class="access-badge" id="access-valid-until">Válido até 31/12/2026</span></p>
                 </div>
             </div>
             <!-- Título principal do infográfico -->
             <div class="text-center mt-8">
-                <h1 class="text-4xl md:text-7xl font-black main-title mb-2 leading-tight tracking-tight" id="journey-title">JORNADA DA <span class="title-accent">MARIA</span></h1>
+                <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-2 leading-tight tracking-tight" id="journey-title" style="font-family:'Playfair Display',serif;font-style:italic">JORNADA DA <span class="hero-accent" style="color:var(--verde)">VITÓRIA</span></h1>
                 <p class="text-base md:text-lg font-light max-w-2xl mx-auto" style="color: var(--cinza)">A profissional que te guia no caminho de volta para si mesma.</p>
             </div>
         </header>
@@ -525,7 +544,7 @@
 
         <!-- Secção "Orientações Essenciais" -->
         <section id="reminders" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Orientações essenciais para <span id="student-first-name">Maria</span></h2>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Orientações essenciais para <span id="student-first-name">Vitória</span></h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Cartão: Escute Seu Corpo -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
@@ -562,7 +581,7 @@
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
     <div id="timer-app-page" class="timer-page hidden">
-        <h1 class="text-4xl md:text-7xl font-black main-title mb-8 text-center leading-tight tracking-tight">TEMPORIZADOR DE <span class="title-accent">TREINO</span></h1>
+        <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-8 text-center leading-tight tracking-tight" style="font-family:'Playfair Display',serif;font-style:italic">TEMPORIZADOR DE <span class="hero-accent" style="color:var(--verde)">TREINO</span></h1>
 
         <!-- Seletores de Semana e Dia -->
         <div class="config-section mb-8">
