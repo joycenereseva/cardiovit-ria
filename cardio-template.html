@@ -1,73 +1,283 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protocolo de Cardio - Profª Joyce Neres</title>
+    <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <link rel="stylesheet" href="css/joyce-theme.css">
+    <!-- Fontes Montserrat + Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --verde: #4A7C62;
+            --verde-dark: #2d4f3e;
+            --verde-light: #8aba9e;
+            --creme: #F0EDE6;
+            --cinza: #7A7A7A;
+            --preto: #1A1A1A;
+            --bg: #F7F5F0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg);
+            color: var(--preto);
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--verde);
+        }
+
+        h2.section-heading {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--preto);
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            border-left: 4px solid var(--verde);
+        }
+
+        .card h3 {
+            color: var(--preto);
+        }
+
+        .card .text-gray-400 {
+            color: var(--cinza);
+        }
+
+        .icon {
+            color: var(--verde);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .nav-button {
+            background-color: var(--verde);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(74, 124, 98, 0.2);
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 2rem;
+        }
+
+        .nav-button:hover {
+            background-color: var(--verde-dark);
+        }
+
+        .timer-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            background-color: var(--bg);
+            color: var(--preto);
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+            margin-bottom: 1rem;
+        }
+
+        .phase-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--preto);
+            margin-bottom: 0.5rem;
+        }
+
+        .set-display {
+            font-size: 1.5rem;
+            color: var(--cinza);
+            margin-bottom: 2rem;
+        }
+
+        .timer-controls button {
+            background-color: #FFFFFF;
+            color: var(--verde);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin: 0.5rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: 2px solid var(--verde);
+            flex-grow: 1;
+            min-width: 100px;
+        }
+
+        .timer-controls button:hover:not(:disabled) {
+            background-color: var(--verde);
+            color: white;
+        }
+
+        .timer-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .config-section {
+            background-color: var(--creme);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08);
+            border: 1px solid var(--verde);
+        }
+
+        .config-section h2 {
+            color: var(--preto);
+        }
+
+        .config-section label {
+            color: var(--preto);
+        }
+
+        .phase-item {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            border: 1px solid var(--verde-light);
+        }
+
+        .phase-item > div {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .phase-item input[type="text"],
+        .phase-item input[type="number"],
+        .phase-item select,
+        .config-section select {
+            background-color: #FFFFFF;
+            color: var(--preto);
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .phase-item button.remove-phase-btn {
+            background-color: var(--verde);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            height: fit-content;
+        }
+
+        .phase-item button.remove-phase-btn:hover {
+            background-color: var(--verde-dark);
+        }
+
+        .add-phase-btn {
+            background-color: var(--verde);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-phase-btn:hover {
+            background-color: var(--verde-dark);
+        }
+
+        .save-load-buttons button {
+            background-color: var(--verde-dark);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            margin: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-load-buttons button:hover {
+            background-color: var(--preto);
+        }
+
+        @media (max-width: 767px) {
+            .phase-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .phase-item > div,
+            .phase-item button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header class="site-header text-white shadow-lg sticky top-0 z-50" id="main-header">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center relative h-20">
-            <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 text-white hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
-                <i data-lucide="menu" class="w-7 h-7"></i>
-            </button>
-            <nav class="hidden lg:flex gap-6 font-bold text-[11px] tracking-widest text-gray-300">
-                <a href="#understanding" class="hover:text-white transition">PROTOCOLO</a>
-                <a href="#borg-scale" class="hover:text-white transition">PSE</a>
-                <a href="#progression" class="hover:text-white transition">PROGRESSÃO</a>
-                <a href="#reminders" class="hover:text-white transition">ORIENTAÇÕES</a>
-            </nav>
-            <a href="#" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                <span class="lg:hidden font-black text-3xl font-serif-brand" style="color:var(--creme)">JN</span>
-                <span class="hidden lg:block font-black text-xl font-serif-brand" style="color:var(--creme)">Profª Joyce Neres</span>
-            </a>
-            <button id="goToTimerPageBtnTop" class="text-white flex items-center justify-center shadow-lg transition rounded-full w-11 h-11 lg:w-auto lg:h-auto lg:px-5 lg:py-2" style="background:var(--verde)">
-                <i data-lucide="timer" class="w-5 h-5"></i>
-                <span class="hidden lg:inline font-bold text-xs ml-2">TEMPORIZADOR</span>
-            </button>
-        </div>
-    </header>
+    <!-- Página do Infográfico Principal -->
+    <div id="main-infographic-page" class="container mx-auto p-4 md:p-8">
 
-    <div id="mobile-menu" class="fixed inset-0 z-40 translate-x-full flex flex-col justify-center items-center text-center" style="background:#18181B">
-        <nav class="flex flex-col gap-8 text-2xl font-black text-white">
-            <a href="#understanding" class="mobile-link hover:text-white/60 transition">PROTOCOLO</a>
-            <a href="#borg-scale" class="mobile-link hover:text-white/60 transition">PSE</a>
-            <a href="#progression" class="mobile-link hover:text-white/60 transition">PROGRESSÃO</a>
-            <a href="#reminders" class="mobile-link hover:text-white/60 transition">ORIENTAÇÕES</a>
-        </nav>
-        <button id="goToTimerPageBtnMobile" class="mt-12 text-white px-8 py-3 rounded-full font-bold text-lg shadow-xl flex items-center gap-2 mobile-link" style="background:var(--verde)">
-            <i data-lucide="timer" class="w-5 h-5"></i> TEMPORIZADOR
-        </button>
-    </div>
-
-    <section id="hero-section" class="hero-section relative py-16 md:py-24 overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" style="background-image:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1470&auto=format&fit=crop')"></div>
-        <div class="container mx-auto px-4 relative z-10 text-center">
-            <p class="font-bold tracking-[0.2em] mb-3 text-xs md:text-sm uppercase hero-accent">Profª Joyce Neres</p>
-            <h1 class="text-4xl md:text-7xl font-black mb-4 leading-tight font-serif-brand">JORNADA DE <br class="md:hidden"><span class="hero-accent">CARDIO</span></h1>
-            <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto font-light px-4">A profissional que te guia no caminho de volta para si mesma.</p>
-            <div class="mt-8 flex justify-center gap-2 md:gap-4">
-                <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
-                <div class="w-3 md:w-4 h-1 rounded-full" style="background:var(--verde)"></div>
-                <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
+        <!-- Cabeçalho do infográfico -->
+        <header class="mb-12">
+            <div class="w-full">
+                <!-- Logotipo do utilizador -->
+                <div class="mb-12 text-center">
+                    <!-- TODO: substituir pela logo da Profª Joyce Neres -->
+                    <img id="userLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo Profª Joyce Neres" class="inline-block rounded-lg shadow-md" style="max-width: 150px; height: auto; display: none;">
+                    <p class="text-xl font-bold mt-2" style="color: var(--preto)">Profª Joyce Neres</p>
+                </div>
+                <!-- Informações do aluno e objetivo -->
+                <div class="text-left mb-10">
+                    <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: Isabella Oliveira</p>
+                    <p class="text-md md:text-lg" style="color: var(--cinza)">Objetivo: Melhoria da Composição Corporal </p>
+                </div>
             </div>
-            <div class="mt-10 max-w-lg mx-auto text-left rounded-2xl p-5 md:p-6" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
-                <p class="text-sm md:text-base text-gray-300"><strong class="text-white">Aluna:</strong> <span id="student-name-display">{{NOME_ALUNA}}</span></p>
-                <p class="text-sm md:text-base text-gray-300 mt-2"><strong class="text-white">Objetivo:</strong> <span id="student-objective-display">{{OBJETIVO}}</span></p>
+            <!-- Título principal do infográfico -->
+            <div class="text-center mt-8">
+                <h1 class="text-4xl md:text-6xl font-black main-title mb-2">JORNADA DA ISABELLA</h1>
             </div>
-        </div>
-    </section>
-
-    <div id="main-infographic-page" class="container mx-auto p-4 md:p-8 py-12 md:py-16">
+        </header>
 
         <!-- Secção "Entendendo Seu Treino" -->
         <section id="understanding" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-title">Entendendo seu protocolo</h2>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Entendendo seu protocolo</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Cartão: Cardio Contínuo -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
@@ -98,64 +308,64 @@
 
         <!-- Secção para a Escala de Borg CR10 (MANTIDA ORIGINAL CONFORME PEDIDO) -->
         <section id="borg-scale" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-title">Escala de percepção subjetiva de esforço (PSE) - Borg CR10 (0-10)</h2>
-            <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">Use esta escala para autoavaliar a intensidade do seu esforço durante os treinos, combinando sensações de respiração, batimentos cardíacos e fadiga muscular.</p>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Escala de percepção subjetiva de esforço (PSE) - Borg CR10 (0-10)</h2>
+            <p class="text-center max-w-3xl mx-auto mb-10" style="color: var(--cinza)">Use esta escala para autoavaliar a intensidade do seu esforço durante os treinos, combinando sensações de respiração, batimentos cardíacos e fadiga muscular.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🟢 0 – Nada de esforço</h3>
-                    <p class="text-gray-400">Sensação: Repouso absoluto. Você está completamente relaxado, sem nenhuma atividade física.<br>Exemplo no cardio: Não aplicável (está em repouso).</p>
+                    <p class="text-gray-400">Repouso total, sem nenhuma atividade física.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🔵 0.5 – Muito, muito leve</h3>
-                    <p class="text-gray-400">Sensação: Praticamente nenhum esforço. A sensação é quase imperceptível, como se você estivesse parado.<br>Exemplo no cardio: Movimentação extremamente lenta e tranquila.</p>
+                    <p class="text-gray-400">Esforço quase imperceptível, movimentação extremamente lenta na escada.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🔵 1 – Muito leve</h3>
-                    <p class="text-gray-400">Sensação: Esforço mínimo, quase despreocupado. Você pode conversar e cantar com facilidade.<br>Exemplo no cardio: Passos suaves, aquecimento bem leve.</p>
+                    <p class="text-gray-400">Esforço mínimo; você conversa e canta com facilidade no aquecimento leve.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🌿 2 – Leve</h3>
-                    <p class="text-gray-400">Sensação: Atividade tranquila e confortável. Respiração aumenta levemente, mas ainda há total controle. É possível falar sem esforço.<br>Exemplo no cardio: Ritmo bem leve ou cardio de recuperação.</p>
+                    <p class="text-gray-400">Ritmo tranquilo e confortável, com respiração levemente acelerada — cardio de recuperação.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🟡 3 – Moderado</h3>
-                    <p class="text-gray-400">Sensação: Um esforço constante, mas sustentável por longos períodos. A respiração fica mais profunda, mas você ainda consegue manter uma conversa sem dificuldade.<br>Exemplo no cardio: Ritmo conversacional, treino leve.</p>
+                    <p class="text-gray-400">Esforço constante e sustentável, ritmo conversacional no treino leve.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🟡 4 – Um pouco forte</h3>
-                    <p class="text-gray-400">Sensação: O esforço começa a ser notável. A respiração acelera e falar passa a exigir um pouco de atenção.<br>Exemplo no cardio: Ritmo constante, um pouco mais rápido do que o normal.</p>
+                    <p class="text-gray-400">Esforço notável, respiração mais rápida — ritmo constante um pouco acima do normal.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">⚠️ 5 – Forte</h3>
-                    <p class="text-gray-400">Sensação: Desafiador, mas ainda sustentável. Falar torna-se difícil; você só consegue dizer algumas palavras entre as respirações.<br>Exemplo no cardio: Ritmo sustentado de média-alta intensidade.</p>
+                    <p class="text-gray-400">Desafiador mas sustentável; falar exige pausas — ritmo médio-alto na escada.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">⚠️ 6 – Forte (quase muito forte)</h3>
-                    <p class="text-gray-400">Sensação: Esforço intenso. Falar é limitado a uma ou duas palavras por vez. A respiração está pesada e rápida.<br>Exemplo no cardio: Trabalho no limiar anaeróbico.</p>
+                    <p class="text-gray-400">Esforço intenso, fala limitada a poucas palavras — trabalho no limiar anaeróbico.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🔴 7 – Muito forte</h3>
-                    <p class="text-gray-400">Sensação: Extremamente desafiador. Você está próximo ao seu limite de fala e consegue apenas emitir sons ou palavras curtas.<br>Exemplo no cardio: Treinos intervalados (HIIT) intensos.</p>
+                    <p class="text-gray-400">Muito desafiador, quase no limite da fala — tiros intensos de HIIT.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">🔥 8 – Muito, muito forte</h3>
-                    <p class="text-gray-400">Sensação: Intensidade elevada, quase insuportável por muito tempo. A respiração é muito ofegante e o corpo pede pausa.<br>Exemplo no cardio: Final de um tiro de alta intensidade (HIIT).</p>
+                    <p class="text-gray-400">Intensidade elevada e ofegante — final de um tiro forte de HIIT.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2"> 9 – Quase máximo</h3>
-                    <p class="text-gray-400">Sensação: Você está praticamente no seu limite físico. Consegue manter esse esforço por poucos minutos no máximo.<br>Exemplo no cardio: Esforço extremo sustentado por pouco tempo.</p>
+                    <p class="text-gray-400">Praticamente no limite físico, sustentável por poucos minutos no máximo.</p>
                 </div>
                 <div class="card p-6 rounded-lg shadow-lg">
                     <h3 class="font-bold text-xl mb-2">⚡ 10 – Máximo</h3>
-                    <p class="text-gray-400">Sensação: Esforço total. Seu corpo está no seu limite absoluto. É um esforço explosivo e insustentável por mais do que alguns segundos.<br>Exemplo no cardio: Sprint total na máquina.</p>
+                    <p class="text-gray-400">Esforço explosivo no limite absoluto — sprint total na máquina.</p>
                 </div>
             </div>
         </section>
         
         <!-- Secção "A Progressão da Sua Jornada" com gráficos -->
         <section id="progression" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-title">A progressão da sua jornada (12 Semanas)</h2>
-            <p class="text-center max-w-3xl mx-auto mb-10 text-gray-600">A sua periodização mantém o volume constante (minutos/semana), focando inteiramente na densidade e tolerância metabólica.</p>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">A progressão da sua jornada (12 Semanas)</h2>
+            <p class="text-center max-w-3xl mx-auto mb-10" style="color: var(--cinza)">A sua periodização mantém o volume constante (minutos/semana), focando inteiramente na densidade e tolerância metabólica.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Gráfico de Evolução do Volume Semanal -->
@@ -175,7 +385,7 @@
                         <canvas id="intensityMixChart"></canvas>
                     </div>
                     <p class="text-gray-400 text-center mt-4">
-                        O gráfico ilustra a progressão metabólica: à medida que os meses avançam, o tempo de esforço nos tiros (vermelho) aumenta em relação à pausa.
+                        O gráfico ilustra a progressão metabólica: à medida que os meses avançam, o tempo de esforço nos tiros (verde) aumenta em relação à pausa.
                     </p>
                 </div>
             </div>
@@ -183,7 +393,7 @@
 
         <!-- Secção "Estrutura das Fases de Treinamento" -->
         <section id="weekly-breakdown" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-title">Estrutura das fases de treinamento</h2>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Estrutura das fases de treinamento</h2>
             
             <div class="space-y-8">
                 <!-- Cartão da Fase 1 -->
@@ -226,7 +436,7 @@
 
         <!-- Secção "Orientações Essenciais" -->
         <section id="reminders" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-title">Orientações essenciais para <span data-student-first-name>{{PRIMEIRO_NOME}}</span></h2>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Orientações essenciais para Isabella</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Cartão: Escute Seu Corpo -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
@@ -255,16 +465,8 @@
         </div>
 
         <!-- Rodapé do infográfico -->
-        <footer class="site-footer text-center py-12 md:py-16 mt-12">
-            <div class="container mx-auto px-4">
-                <h2 class="text-2xl md:text-4xl font-black leading-tight mb-6 font-serif-brand" style="color:var(--creme)">Sua vez de Começar<br>e Permanecer</h2>
-                <a href="https://www.instagram.com/joyceneresef/" target="_blank" rel="noopener" class="inline-flex items-center text-white font-bold py-4 px-10 rounded-full transition-all hover:scale-105 mb-4 text-sm md:text-base" style="background:var(--verde)">
-                    <i data-lucide="instagram" class="w-5 h-5 mr-2"></i>ACOMPANHE NO INSTAGRAM
-                </a>
-                <p class="text-sm max-w-xl mx-auto mt-2 mb-10" style="color:rgba(240,237,230,.4)">O suporte para quem decidiu se escolher novamente e a não se deixar para depois.</p>
-                <div class="font-black text-3xl md:text-5xl tracking-tighter mb-6 select-none" style="color:rgba(255,255,255,.07)">#VAMOSJUNTAS</div>
-                <p class="text-xs md:text-sm" style="color:rgba(240,237,230,.15)">© 2026 PROFª JOYCE NERES</p>
-            </div>
+        <footer class="text-center mt-12 pt-8 border-t" style="border-color: var(--verde-light)">
+            <p style="color: var(--cinza)">Com foco e dedicação, os resultados na composição corporal são garantidos!</p>
         </footer>
 
     </div>
@@ -275,14 +477,14 @@
 
         <!-- Seletores de Semana e Dia -->
         <div class="config-section mb-8">
-            <h2 class="text-2xl font-bold text-white mb-4 text-center">Selecionar Treino do Plano</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Selecionar Treino do Plano</h2>
             <div class="flex flex-col md:flex-row gap-4 mb-4">
                 <div class="flex-1">
-                    <label for="weekSelect" class="block text-gray-300 text-lg mb-2">Semana:</label>
+                    <label for="weekSelect" class="block text-lg mb-2" style="color: var(--preto)">Semana:</label>
                     <select id="weekSelect" class="w-full"></select>
                 </div>
                 <div class="flex-1">
-                    <label for="daySelect" class="block text-gray-300 text-lg mb-2">Dia da Semana:</label>
+                    <label for="daySelect" class="block text-lg mb-2" style="color: var(--preto)">Dia da Semana:</label>
                     <select id="daySelect" class="w-full"></select>
                 </div>
             </div>
@@ -308,14 +510,14 @@
 
         <!-- Secção de Configuração de Treino Personalizado -->
         <div class="config-section mt-8">
-            <h2 class="text-2xl font-bold text-white mb-4 text-center">Ou crie/edite seu treino personalizado</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Seu espaço para treino livre</h2>
             <div id="phasesContainer" class="space-y-4 mb-4">
                 <!-- Fases serão adicionadas aqui via JS -->
             </div>
             <button id="addPhaseBtn" class="add-phase-btn w-full">Adicionar Fase</button>
             <div class="mt-6">
-                <label for="numSets" class="block text-gray-300 text-lg mb-2">Número de Séries:</label>
-                <input type="number" id="numSets" value="1" min="1" class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600">
+                <label for="numSets" class="block text-lg mb-2" style="color: var(--preto)">Número de Séries:</label>
+                <input type="number" id="numSets" value="1" min="1" class="w-full p-2 rounded border" style="background:#fff;color:var(--preto);border-color:#d1d5db">
             </div>
             <div class="save-load-buttons flex justify-center mt-6">
                 <button id="saveConfigBtn">Salvar Configuração</button>
@@ -325,86 +527,6 @@
     </div>
 
     <script>
-        // =============================================
-        // CONFIGURAÇÃO DA ALUNA (personalizar por página)
-        // =============================================
-        const STUDENT_CONFIG = {
-            nomeCompleto: 'Vitória Silva',
-            primeiroNome: 'Vitória',
-            objetivo: 'Melhoria da Composição Corporal',
-            acessoValidoAte: '2026-08-05' // YYYY-MM-DD — bloqueio de acesso (próxima etapa)
-        };
-
-        function initLucide() {
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-            else setTimeout(initLucide, 100);
-        }
-
-        function applyStudentConfig() {
-            document.title = `Protocolo de Cardio - ${STUDENT_CONFIG.primeiroNome} | Profª Joyce Neres`;
-            const nameEl = document.getElementById('student-name-display');
-            const objectiveEl = document.getElementById('student-objective-display');
-            if (nameEl) nameEl.textContent = STUDENT_CONFIG.nomeCompleto;
-            if (objectiveEl) objectiveEl.textContent = STUDENT_CONFIG.objetivo;
-
-            document.querySelectorAll('[data-student-first-name]').forEach((el) => {
-                el.textContent = STUDENT_CONFIG.primeiroNome;
-            });
-        }
-
-        function openTimerPage() {
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('hero-section').classList.add('hidden');
-            mainInfographicPage.classList.add('hidden');
-            timerAppPage.classList.remove('hidden');
-            timerAppPage.style.display = 'flex';
-            populateWeekAndDaySelects();
-            loadWorkoutConfig();
-            updateDisplay();
-            window.scrollTo(0, 0);
-        }
-
-        function closeTimerPage() {
-            pauseTimer();
-            document.getElementById('main-header').classList.remove('hidden');
-            document.getElementById('hero-section').classList.remove('hidden');
-            mainInfographicPage.classList.remove('hidden');
-            timerAppPage.classList.add('hidden');
-            timerAppPage.style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            applyStudentConfig();
-            initLucide();
-
-            const mbtn = document.getElementById('mobile-menu-btn');
-            const mmenu = document.getElementById('mobile-menu');
-            let mopen = false;
-            if (mbtn && mmenu) {
-                mbtn.addEventListener('click', () => {
-                    mopen = !mopen;
-                    mmenu.classList.toggle('translate-x-full', !mopen);
-                    mbtn.innerHTML = mopen ? '<i data-lucide="x" class="w-7 h-7"></i>' : '<i data-lucide="menu" class="w-7 h-7"></i>';
-                    document.body.style.overflow = mopen ? 'hidden' : 'auto';
-                    initLucide();
-                });
-                document.querySelectorAll('.mobile-link').forEach((link) => {
-                    link.addEventListener('click', () => {
-                        mopen = false;
-                        mmenu.classList.add('translate-x-full');
-                        mbtn.innerHTML = '<i data-lucide="menu" class="w-7 h-7"></i>';
-                        document.body.style.overflow = 'auto';
-                        initLucide();
-                    });
-                });
-            }
-
-            ['goToTimerPageBtn', 'goToTimerPageBtnTop', 'goToTimerPageBtnMobile'].forEach((id) => {
-                const btn = document.getElementById(id);
-                if (btn) btn.addEventListener('click', openTimerPage);
-            });
-        });
-
         // --- Funções Auxiliares de Tempo ---
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
@@ -524,7 +646,21 @@
         };
 
         // --- Funções de Navegação de Página ---
-        backToInfographicBtn.addEventListener('click', closeTimerPage);
+        goToTimerPageBtn.addEventListener('click', () => {
+            mainInfographicPage.classList.add('hidden');
+            timerAppPage.classList.remove('hidden');
+            timerAppPage.style.display = 'flex'; // Garante que a página do temporizador seja exibida como flex
+            populateWeekAndDaySelects(); // Preenche os seletores
+            loadWorkoutConfig(); // Tenta carregar a última configuração salva (personalizada)
+            updateDisplay(); // Atualiza o display inicial
+        });
+
+        backToInfographicBtn.addEventListener('click', () => {
+            pauseTimer(); // Pausa o timer ao voltar
+            mainInfographicPage.classList.remove('hidden');
+            timerAppPage.classList.add('hidden');
+            timerAppPage.style.display = 'none'; // Esconde a página do temporizador
+        });
 
         // --- Funções de Configuração do Treino ---
 
