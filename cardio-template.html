@@ -265,9 +265,75 @@
                 width: 100%;
             }
         }
+
+        #access-lock-screen {
+            display: none;
+            min-height: 100vh;
+            background: var(--preto);
+            color: var(--creme);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        html.access-expired #access-lock-screen {
+            display: flex;
+        }
+
+        html.access-expired #app-content {
+            display: none !important;
+        }
+
+        .access-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            background: #e8f5ee;
+            color: var(--verde-dark);
+        }
     </style>
+    <script>
+        window.STUDENT_ACCESS = {
+            nome: '{{NOME_ALUNA}}',
+            acessoValidoAte: '{{ACESSO_VALIDO_ATE}}',
+            bloqueioAtivo: true
+        };
+
+        (function () {
+            const cfg = window.STUDENT_ACCESS;
+            if (!cfg || !cfg.bloqueioAtivo) return;
+            if (!cfg.acessoValidoAte || cfg.acessoValidoAte.includes('{{')) return;
+            const fim = new Date(cfg.acessoValidoAte + 'T23:59:59');
+            if (new Date() > fim) {
+                document.documentElement.classList.add('access-expired');
+            }
+        })();
+    </script>
 </head>
 <body>
+
+    <div id="access-lock-screen">
+        <p class="text-sm uppercase tracking-widest font-bold mb-4" style="color: var(--verde-light)">Profª Joyce Neres</p>
+        <h1 class="text-3xl md:text-5xl font-black main-title mb-4" style="color: var(--creme)">Acesso <span class="title-accent" style="color: var(--verde-light)">encerrado</span></h1>
+        <p class="text-base md:text-lg max-w-md mb-2" style="color: rgba(240,237,230,.75)" id="access-expired-message">
+            O período de acompanhamento chegou ao fim.
+        </p>
+        <p class="text-sm md:text-base max-w-md mb-8" style="color: rgba(240,237,230,.55)">
+            Para continuar com seu protocolo de cardio, renove sua mensalidade com a Profª Joyce.
+        </p>
+        <a href="https://www.instagram.com/joyceneresef/" target="_blank" rel="noopener"
+           class="nav-button" style="margin-top: 0; text-decoration: none;">
+            Falar com a Profª no Instagram
+        </a>
+    </div>
+
+    <div id="app-content">
 
     <header class="site-brand-bar text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex justify-center items-center h-20">
@@ -289,6 +355,7 @@
                     <p class="text-sm uppercase tracking-widest font-bold mb-2" style="color: var(--verde-light)">Protocolo personalizado</p>
                     <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: <span id="student-name">{{NOME_ALUNA}}</span></p>
                     <p class="text-md md:text-lg mt-1" style="color: var(--cinza)">Objetivo: <span id="student-objective">{{OBJETIVO}}</span></p>
+                    <p class="mt-4"><span class="access-badge" id="access-valid-until">Válido até {{ACESSO_VALIDO_ATE_BR}}</span></p>
                 </div>
             </div>
             <!-- Título principal do infográfico -->
@@ -549,7 +616,29 @@
         </div>
     </div>
 
+    </div>
+
     <script>
+        (function initAccessUI() {
+            const cfg = window.STUDENT_ACCESS;
+            if (!cfg || !cfg.acessoValidoAte || cfg.acessoValidoAte.includes('{{')) return;
+
+            const formatDate = (iso) => {
+                const [y, m, d] = iso.split('-');
+                return `${d}/${m}/${y}`;
+            };
+
+            const validUntilEl = document.getElementById('access-valid-until');
+            if (validUntilEl) {
+                validUntilEl.textContent = `Válido até ${formatDate(cfg.acessoValidoAte)}`;
+            }
+
+            const expiredMsg = document.getElementById('access-expired-message');
+            if (expiredMsg && cfg.nome && !cfg.nome.includes('{{')) {
+                expiredMsg.textContent = `${cfg.nome}, seu acesso expirou em ${formatDate(cfg.acessoValidoAte)}.`;
+            }
+        })();
+
         // --- Funções Auxiliares de Tempo ---
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
