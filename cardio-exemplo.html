@@ -8,12 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carrega Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Fontes: Montserrat (textos) + Bodoni Moda itálico (títulos Jornada/Temporizador) -->
+    <!-- Fontes Montserrat + Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,9..96,700;1,9..96,800;1,9..96,900&family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@1,9..96,700;1,9..96,800;1,9..96,900&family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
         :root {
             --verde: #4A7C62;
@@ -33,12 +33,11 @@
 
         .hero-display-title,
         .hero-display-title .hero-accent {
-            font-family: 'Bodoni Moda', 'Didot', 'Bodoni MT', serif !important;
+            font-family: 'Playfair Display', serif !important;
             font-style: italic !important;
-            font-weight: 800 !important;
-            letter-spacing: 0.04em;
-            line-height: 1.05;
-            text-transform: uppercase;
+            font-weight: 900 !important;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
         }
 
         .hero-display-title {
@@ -63,9 +62,8 @@
         }
 
         h2.section-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-style: normal;
-            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
             color: var(--preto);
         }
 
@@ -380,7 +378,7 @@
             </div>
             <!-- Título principal do infográfico -->
             <div class="text-center mt-8">
-                <h1 class="text-4xl md:text-7xl hero-display-title mb-2 leading-tight tracking-tight" id="journey-title">JORNADA DA <span class="hero-accent">VITÓRIA</span></h1>
+                <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-2 leading-tight tracking-tight" id="journey-title" style="font-family:'Playfair Display',serif;font-style:italic">JORNADA DA <span class="hero-accent" style="color:var(--verde)">VITÓRIA</span></h1>
                 <p class="text-base md:text-lg font-light max-w-2xl mx-auto" style="color: var(--cinza)">A profissional que te guia no caminho de volta para si mesma.</p>
             </div>
         </header>
@@ -583,7 +581,7 @@
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
     <div id="timer-app-page" class="timer-page hidden">
-        <h1 class="text-4xl md:text-7xl hero-display-title mb-8 text-center leading-tight tracking-tight">TEMPORIZADOR DE <span class="hero-accent">TREINO</span></h1>
+        <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-8 text-center leading-tight tracking-tight" style="font-family:'Playfair Display',serif;font-style:italic">TEMPORIZADOR DE <span class="hero-accent" style="color:var(--verde)">TREINO</span></h1>
 
         <!-- Seletores de Semana e Dia -->
         <div class="config-section mb-8">
