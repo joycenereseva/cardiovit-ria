@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo de Cardio - Vitória | Profª Joyce Neres</title>
+    <title>Protocolo de Cardio - Vitória Cardoso | Profª Joyce Neres</title>
     <!-- Carrega Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carrega Chart.js para gráficos -->
@@ -319,8 +319,8 @@
     </style>
     <script>
         window.STUDENT_ACCESS = {
-            nome: 'Vitória Silva',
-            acessoValidoAte: '2026-12-31',
+            nome: 'Vitória Cardoso',
+            acessoValidoAte: '2026-10-31',
             bloqueioAtivo: true
         };
 
@@ -372,14 +372,14 @@
                 <!-- Informações do aluno e objetivo -->
                 <div class="text-center mb-10 mt-4">
                     <p class="text-sm uppercase tracking-widest font-bold mb-2" style="color: var(--verde-light)">Protocolo personalizado</p>
-                    <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: <span id="student-name">Vitória Silva</span></p>
+                    <p class="text-md md:text-lg" style="color: var(--cinza)">Aluna: <span id="student-name">Vitória Cardoso</span></p>
                     <p class="text-md md:text-lg mt-1" style="color: var(--cinza)">Objetivo: <span id="student-objective">Melhoria da Composição Corporal</span></p>
-                    <p class="mt-4"><span class="access-badge" id="access-valid-until">Válido até 31/12/2026</span></p>
+                    <p class="mt-4"><span class="access-badge" id="access-valid-until">Válido até 31/10/2026</span></p>
                 </div>
             </div>
             <!-- Título principal do infográfico -->
             <div class="text-center mt-8">
-                <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-2 leading-tight tracking-tight" id="journey-title" style="font-family:'Playfair Display',serif;font-style:italic">JORNADA DA <span class="hero-accent" style="color:var(--verde)">VITÓRIA</span></h1>
+                <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-2 leading-tight tracking-tight" id="journey-title" style="font-family:'Playfair Display',serif;font-style:italic">JORNADA DE <span class="hero-accent" style="color:var(--verde)">VITÓRIA</span></h1>
             </div>
         </header>
 
@@ -387,23 +387,23 @@
         <section id="understanding" class="mb-16">
             <h2 class="text-3xl font-bold text-center mb-8 section-heading">Entendendo seu protocolo</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Cartão: Cardio Contínuo -->
-                <div class="card p-6 rounded-lg shadow-lg text-center">
-                    <div class="icon text-4xl mb-3">🏃</div>
-                    <h3 class="font-bold text-xl mb-2">Cardio contínuo (MICT)</h3>
-                    <p class="text-gray-400">Segundas, Quartas e Sextas (30 min). Ritmo constante na escada. Foco na zona 2.</p>
-                </div>
-                <!-- Cartão: Treino Intervalado -->
+                <!-- Cartão: HIIT Curto -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
                     <div class="icon text-4xl mb-3">⚡</div>
-                    <h3 class="font-bold text-xl mb-2">Treino Intervalado (HIIT)</h3>
-                    <p class="text-gray-400">Terças e Quintas (20 min). Alternância entre esforço vigoroso e recuperação ativa. Gera efeito EPOC.</p>
+                    <h3 class="font-bold text-xl mb-2">HIIT curto</h3>
+                    <p class="text-gray-400">Terças, quintas e sábados (semanas 1-3). Tiros curtos de corrida com recuperação ativa. Gera efeito EPOC.</p>
                 </div>
-                <!-- Cartão: Progressão -->
+                <!-- Cartão: HIIT Longo -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
-                    <div class="icon text-4xl mb-3">📈</div>
-                    <h3 class="font-bold text-xl mb-2">Progressão de densidade</h3>
-                    <p class="text-gray-400">O tempo total de treino não muda, mas os intervalos de descanso diminuem ao longo dos 3 meses.</p>
+                    <div class="icon text-4xl mb-3">🏃</div>
+                    <h3 class="font-bold text-xl mb-2">HIIT longo</h3>
+                    <p class="text-gray-400">Terças, quintas e sábados (semanas 5-7). Tiros mais longos de corrida, evoluindo a tolerância metabólica.</p>
+                </div>
+                <!-- Cartão: MICT Livre -->
+                <div class="card p-6 rounded-lg shadow-lg text-center">
+                    <div class="icon text-4xl mb-3">🌿</div>
+                    <h3 class="font-bold text-xl mb-2">MICT livre</h3>
+                    <p class="text-gray-400">Terças, quintas e sábados (semanas 9-11). Corrida contínua em ritmo confortável. Foco na zona 2.</p>
                 </div>
                 <!-- Cartão: Recuperação -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
@@ -414,9 +414,9 @@
             </div>
         </section>
 
-        <!-- Secção para a Escala de Borg CR10 (MANTIDA ORIGINAL CONFORME PEDIDO) -->
+        <!-- Secção para a Escala de Borg (0-10) -->
         <section id="borg-scale" class="mb-16">
-            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Escala de percepção subjetiva de esforço (PSE) - Borg CR10 (0-10)</h2>
+            <h2 class="text-3xl font-bold text-center mb-8 section-heading">Escala de percepção subjetiva de esforço (PSE) - Borg (0-10)</h2>
             <p class="text-center max-w-3xl mx-auto mb-10" style="color: var(--cinza)">Use esta escala para autoavaliar a intensidade do seu esforço durante os treinos, combinando sensações de respiração, batimentos cardíacos e fadiga muscular.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="card p-6 rounded-lg shadow-lg">
@@ -473,7 +473,7 @@
         <!-- Secção "A Progressão da Sua Jornada" com gráficos -->
         <section id="progression" class="mb-16">
             <h2 class="text-3xl font-bold text-center mb-8 section-heading">A progressão da sua jornada (12 Semanas)</h2>
-            <p class="text-center max-w-3xl mx-auto mb-10" style="color: var(--cinza)">A sua periodização mantém o volume constante (minutos/semana), focando inteiramente na densidade e tolerância metabólica.</p>
+            <p class="text-center max-w-3xl mx-auto mb-10" style="color: var(--cinza)">A sua periodização alterna blocos de HIIT curto, HIIT longo e corrida contínua livre, com deload a cada 3 semanas.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Gráfico de Evolução do Volume Semanal -->
@@ -483,7 +483,7 @@
                         <canvas id="volumeChart"></canvas>
                     </div>
                     <p class="text-gray-400 text-center mt-4">
-                        O volume total em minutos estabiliza em 130 min/semana (3x 30m + 2x 20m), respeitando o teto de tempo disponível.
+                        O volume semanal varia conforme o bloco: 60 min nas semanas de HIIT (3x 20 min) e 90 min nas semanas de MICT livre (3x 30 min).
                     </p>
                 </div>
                 <!-- Gráfico de Intensidade: Variedade para a Performance -->
@@ -507,11 +507,10 @@
                 <!-- Cartão da Fase 1 -->
                 <div class="card p-6 rounded-lg shadow-lg">
                     <div class="icon text-4xl mb-3">🏗️</div>
-                    <h3 class="font-bold text-xl mb-2">Mês 1: Adaptação e densidade inicial (Semanas 1-4)</h3>
-                    <p class="text-gray-400 mb-4">Foco: Habituar o SNC às transições rápidas na escada e preparar o maquinário enzimático.</p>
+                    <h3 class="font-bold text-xl mb-2">Mês 1: HIIT curto (Semanas 1-4)</h3>
+                    <p class="text-gray-400 mb-4">Foco: Habituar o SNC às transições rápidas na corrida e preparar o maquinário enzimático.</p>
                     <ul class="list-disc list-inside text-gray-400 space-y-1">
-                        <li>Seg/Qua/Sex: Cardio moderado (MICT) - 30 min em ritmo sustentável.</li>
-                        <li>Ter/Qui: HIIT - Tiros curtos (ex: 30s de esforço para 30s de pausa), evoluindo o rácio gradualmente.</li>
+                        <li>Ter/Qui/Sáb: HIIT curto — tiros curtos (ex: 30s de esforço para 30s de pausa), evoluindo o rácio gradualmente.</li>
                         <li>Semana 4: Deload programado.</li>
                     </ul>
                 </div>
@@ -519,11 +518,10 @@
                 <!-- Cartão da Fase 2 -->
                 <div class="card p-6 rounded-lg shadow-lg">
                     <div class="icon text-4xl mb-3">📈</div>
-                    <h3 class="font-bold text-xl mb-2">Mês 2: Tolerância Glicolítica (Semanas 5-8)</h3>
-                    <p class="text-gray-400 mb-4">Foco: Sustentar a contração de alta intensidade por tempos mais prolongados, forçando a capacidade de tamponamento (buffering).</p>
+                    <h3 class="font-bold text-xl mb-2">Mês 2: HIIT longo (Semanas 5-8)</h3>
+                    <p class="text-gray-400 mb-4">Foco: Sustentar a corrida de alta intensidade por tempos mais prolongados, forçando a capacidade de tamponamento (buffering).</p>
                     <ul class="list-disc list-inside text-gray-400 space-y-1">
-                        <li>Seg/Qua/Sex: Cardio Moderado (MICT) - 30 min.</li>
-                        <li>Ter/Qui: HIIT - Tiros mais longos (até 60s).</li>
+                        <li>Ter/Qui/Sáb: HIIT longo — tiros mais longos (até 60s).</li>
                         <li>Semana 8: Deload programado.</li>
                     </ul>
                 </div>
@@ -531,11 +529,10 @@
                 <!-- Cartão da Fase 3 -->
                 <div class="card p-6 rounded-lg shadow-lg">
                     <div class="icon text-4xl mb-3">🔥</div>
-                    <h3 class="font-bold text-xl mb-2">Mês 3: Maximização metabólica e EPOC (Semanas 9-12)</h3>
-                    <p class="text-gray-400 mb-4">Foco: Micro-intervalos de densidade extrema. Pausas minúsculas para forçar o sistema aeróbio a trabalhar no limite.</p>
+                    <h3 class="font-bold text-xl mb-2">Mês 3: MICT livre (Semanas 9-12)</h3>
+                    <p class="text-gray-400 mb-4">Foco: Corrida contínua em ritmo confortável, consolidando a base aeróbia e a economia de corrida.</p>
                     <ul class="list-disc list-inside text-gray-400 space-y-1">
-                        <li>Seg/Qua/Sex: Cardio moderado (MICT) - 30 min.</li>
-                        <li>Ter/Qui: HIIT - Alta densidade (ex: 30s forte para apenas 10s de pausa). Máxima queima lipídica pós-treino.</li>
+                        <li>Ter/Qui/Sáb: MICT livre — corrida contínua (30 min) em ritmo sustentável, zona 2.</li>
                         <li>Semana 12: Deload/Manutenção final.</li>
                     </ul>
                 </div>
@@ -550,7 +547,7 @@
                 <div class="card p-6 rounded-lg shadow-lg text-center">
                     <div class="icon text-4xl mb-3">👂</div>
                     <h3 class="font-bold text-xl mb-2">Escute seu corpo</h3>
-                    <p class="text-gray-400">O treino de escada exige muito da musculatura dos membros inferiores. Se a fadiga residual estiver muito alta, avise-me para ajustarmos o volume.</p>
+                    <p class="text-gray-400">O treino de corrida HIIT exige bastante do corpo. Se a fadiga residual estiver muito alta, avise-me para ajustarmos o volume.</p>
                 </div>
                 <!-- Cartão: Hidratação e Nutrição -->
                 <div class="card p-6 rounded-lg shadow-lg text-center">
@@ -711,34 +708,34 @@
         const loadSelectedWorkoutBtn = document.getElementById('loadSelectedWorkoutBtn');
 
         // =============================================
-        // PLANO DE TREINO DE ESCADA (12 Semanas)
+        // PLANO DE TREINO DE CORRIDA (12 Semanas)
         // =============================================
         function generateHIIT(sets, activeSecs, restSecs) {
             let intervals = [];
             for(let i=1; i<=sets; i++) {
-                intervals.push({ name: `Tiro ${i}/${sets}`, duration: activeSecs, intensity: 'Alta', description: `Ritmo forte (PSE 8-9)! Duração: ${activeSecs}s.` });
-                intervals.push({ name: `Recuperação ${i}/${sets}`, duration: restSecs, intensity: 'Baixa', description: `Recupere ativamente (PSE 3-4). Duração: ${restSecs}s.` });
+                intervals.push({ name: `Tiro ${i}/${sets}`, duration: activeSecs, intensity: 'Alta', description: `Corrida forte (PSE 8-9)! Duração: ${activeSecs}s.` });
+                intervals.push({ name: `Recuperação ${i}/${sets}`, duration: restSecs, intensity: 'Baixa', description: `Trote ou caminhada ativa (PSE 3-4). Duração: ${restSecs}s.` });
             }
             return intervals;
         }
 
         const mictWorkout = [
-            { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Inicie lento. Vá subindo 1 nível por minuto.' },
-            { name: 'Cardio Contínuo', duration: 20 * 60, intensity: 'Moderada', description: 'Mantenha nível constante. Suor contínuo, respiração controlada (PSE 5-6).' },
-            { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Reduza para um nível leve.' }
+            { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Caminhada leve, aumentando o ritmo gradualmente.' },
+            { name: 'Corrida Contínua', duration: 20 * 60, intensity: 'Moderada', description: 'Mantenha ritmo constante de corrida. Suor contínuo, respiração controlada (PSE 5-6).' },
+            { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Reduza para caminhada leve até parar.' }
         ];
 
         const mictDeload = [
-            { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Ritmo muito solto.' },
-            { name: 'Cardio Leve', duration: 20 * 60, intensity: 'Baixa', description: 'Mantenha na zona Leve (PSE 4). Recuperação.' },
-            { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Volta à calma.' }
+            { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Caminhada em ritmo muito solto.' },
+            { name: 'Corrida Leve', duration: 20 * 60, intensity: 'Baixa', description: 'Mantenha na zona leve (PSE 4). Recuperação.' },
+            { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Volta à calma com caminhada.' }
         ];
 
         function createHIITWorkout(sets, activeSecs, restSecs) {
             return [
-                { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Prepare as articulações. Ritmo leve.' },
+                { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Caminhada e trote leve para preparar o corpo.' },
                 ...generateHIIT(sets, activeSecs, restSecs),
-                { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Pausa ativa leve até o fim.' }
+                { name: 'Desaquecimento', duration: 5 * 60, intensity: 'Baixa', description: 'Caminhada leve até o fim.' }
             ];
         }
 
@@ -752,27 +749,22 @@
         const hiitS6 = createHIITWorkout(8, 50, 25);
         const hiitS7 = createHIITWorkout(8, 60, 15);
         const hiitS8 = createHIITWorkout(6, 40, 60);
-        // Mês 3
-        const hiitS9 = createHIITWorkout(15, 30, 10);
-        const hiitS10 = createHIITWorkout(12, 40, 10);
-        const hiitS11 = createHIITWorkout(10, 50, 10);
-        const hiitS12 = createHIITWorkout(8, 30, 45);
 
         const fullTrainingPlan = {
-            'Semana 1': { 'Segunda': mictWorkout, 'Terça': hiitS1, 'Quarta': mictWorkout, 'Quinta': hiitS1, 'Sexta': mictWorkout },
-            'Semana 2': { 'Segunda': mictWorkout, 'Terça': hiitS2, 'Quarta': mictWorkout, 'Quinta': hiitS2, 'Sexta': mictWorkout },
-            'Semana 3': { 'Segunda': mictWorkout, 'Terça': hiitS3, 'Quarta': mictWorkout, 'Quinta': hiitS3, 'Sexta': mictWorkout },
-            'Semana 4 (Deload)': { 'Segunda': mictDeload, 'Terça': hiitS4, 'Quarta': mictDeload, 'Quinta': hiitS4, 'Sexta': mictDeload },
-            
-            'Semana 5': { 'Segunda': mictWorkout, 'Terça': hiitS5, 'Quarta': mictWorkout, 'Quinta': hiitS5, 'Sexta': mictWorkout },
-            'Semana 6': { 'Segunda': mictWorkout, 'Terça': hiitS6, 'Quarta': mictWorkout, 'Quinta': hiitS6, 'Sexta': mictWorkout },
-            'Semana 7': { 'Segunda': mictWorkout, 'Terça': hiitS7, 'Quarta': mictWorkout, 'Quinta': hiitS7, 'Sexta': mictWorkout },
-            'Semana 8 (Deload)': { 'Segunda': mictDeload, 'Terça': hiitS8, 'Quarta': mictDeload, 'Quinta': hiitS8, 'Sexta': mictDeload },
-            
-            'Semana 9': { 'Segunda': mictWorkout, 'Terça': hiitS9, 'Quarta': mictWorkout, 'Quinta': hiitS9, 'Sexta': mictWorkout },
-            'Semana 10': { 'Segunda': mictWorkout, 'Terça': hiitS10, 'Quarta': mictWorkout, 'Quinta': hiitS10, 'Sexta': mictWorkout },
-            'Semana 11': { 'Segunda': mictWorkout, 'Terça': hiitS11, 'Quarta': mictWorkout, 'Quinta': hiitS11, 'Sexta': mictWorkout },
-            'Semana 12 (Deload)': { 'Segunda': mictDeload, 'Terça': hiitS12, 'Quarta': mictDeload, 'Quinta': hiitS12, 'Sexta': mictDeload }
+            'Semana 1': { 'Terça': hiitS1, 'Quinta': hiitS1, 'Sábado': hiitS1 },
+            'Semana 2': { 'Terça': hiitS2, 'Quinta': hiitS2, 'Sábado': hiitS2 },
+            'Semana 3': { 'Terça': hiitS3, 'Quinta': hiitS3, 'Sábado': hiitS3 },
+            'Semana 4 (Deload)': { 'Terça': hiitS4, 'Quinta': hiitS4, 'Sábado': hiitS4 },
+
+            'Semana 5': { 'Terça': hiitS5, 'Quinta': hiitS5, 'Sábado': hiitS5 },
+            'Semana 6': { 'Terça': hiitS6, 'Quinta': hiitS6, 'Sábado': hiitS6 },
+            'Semana 7': { 'Terça': hiitS7, 'Quinta': hiitS7, 'Sábado': hiitS7 },
+            'Semana 8 (Deload)': { 'Terça': hiitS8, 'Quinta': hiitS8, 'Sábado': hiitS8 },
+
+            'Semana 9': { 'Terça': mictWorkout, 'Quinta': mictWorkout, 'Sábado': mictWorkout },
+            'Semana 10': { 'Terça': mictWorkout, 'Quinta': mictWorkout, 'Sábado': mictWorkout },
+            'Semana 11': { 'Terça': mictWorkout, 'Quinta': mictWorkout, 'Sábado': mictWorkout },
+            'Semana 12 (Deload)': { 'Terça': mictDeload, 'Quinta': mictDeload, 'Sábado': mictDeload }
         };
 
         // --- Funções de Navegação de Página ---
@@ -807,7 +799,7 @@
 
             // Preencher Dias
             daySelect.innerHTML = '';
-            const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+            const days = ['Terça', 'Quinta', 'Sábado'];
             days.forEach(day => {
                 const option = document.createElement('option');
                 option.value = day;
@@ -1077,12 +1069,12 @@
 
 
         // --- Lógica dos Gráficos ---
-        // Dados para o gráfico de volume (12 semanas, fixado em 130 min/semana conforme protocolo)
+        // Dados para o gráfico de volume (12 semanas — 3 treinos/semana)
         const volumeData = {
             labels: Array.from({length: 12}, (_, i) => `Semana ${i + 1}`),
             datasets: [{
                 label: 'Volume Total (min)',
-                data: [130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130],
+                data: [60, 60, 60, 60, 60, 60, 60, 60, 90, 90, 90, 90],
                 borderColor: '#4A7C62',
                 backgroundColor: 'rgba(74, 124, 98, 0.2)',
                 fill: true,
@@ -1092,7 +1084,7 @@
 
         // Dados para o gráfico de intensidade (Progressão de Densidade do W:R Ratio)
         const intensityData = {
-            labels: ['Mês 1 (Base)', 'Mês 2 (Glicolítica)', 'Mês 3 (EPOC Máx)'],
+            labels: ['Mês 1 (HIIT Curto)', 'Mês 2 (HIIT Longo)', 'Mês 3 (MICT Livre)'],
             datasets: [
                 {
                     label: 'Recuperação/Baixa (%)',
@@ -1155,7 +1147,7 @@
                     options: {
                         ...commonChartOptions,
                         scales: {
-                            y: { ...commonChartOptions.scales.y, title: { display: true, text: 'Minutos', color: '#6B7280' }, min: 0, max: 150 },
+                            y: { ...commonChartOptions.scales.y, title: { display: true, text: 'Minutos', color: '#6B7280' }, min: 0, max: 120 },
                             x: { ...commonChartOptions.scales.x }
                         }
                     }
