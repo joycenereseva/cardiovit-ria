@@ -635,7 +635,7 @@
 
         <!-- Seletores de Semana e Dia -->
         <div class="config-section mb-8">
-            <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Selecionar Treino do Plano</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Treino do plano — Vitória Cardoso</h2>
             <div class="flex flex-col md:flex-row gap-4 mb-4">
                 <div class="flex-1">
                     <label for="weekSelect" class="block text-lg mb-2" style="color: var(--preto)">Semana:</label>
@@ -646,15 +646,21 @@
                     <select id="daySelect" class="w-full"></select>
                 </div>
             </div>
-            <button id="loadSelectedWorkoutBtn" class="nav-button w-full">Carregar Treino Selecionado</button>
+            <button id="loadSelectedWorkoutBtn" class="nav-button w-full">Atualizar prescrição do dia</button>
+            <div id="workoutSummary" class="mt-6 p-4 rounded-lg text-left" style="background:#fff;border:1px solid var(--verde-light);display:none">
+                <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color:var(--verde)">Prescrição carregada</p>
+                <p id="workoutSummaryTitle" class="font-bold text-lg mb-1" style="color:var(--preto)"></p>
+                <p id="workoutSummaryMeta" class="text-sm mb-3" style="color:var(--cinza)"></p>
+                <ol id="workoutPhaseList" class="text-sm space-y-1 list-decimal list-inside" style="color:var(--cinza)"></ol>
+            </div>
         </div>
 
         <!-- Área de exibição do temporizador -->
         <div class="text-center mb-8">
-            <p class="phase-display" id="currentPhaseName">Pronto para Iniciar</p>
+            <p class="phase-display" id="currentPhaseName">Selecione semana e dia</p>
             <p class="timer-display text-gray-200" id="timeLeftDisplay">00:00</p>
             <p class="text-gray-400 text-lg mt-2" id="phaseInstructions"></p>
-            <p class="set-display" id="currentSetDisplay">Série: 0/0</p>
+            <p class="set-display" id="currentSetDisplay">Fase: 0/0</p>
         </div>
 
         <!-- Controles do temporizador -->
@@ -768,6 +774,12 @@
         const weekSelect = document.getElementById('weekSelect');
         const daySelect = document.getElementById('daySelect');
         const loadSelectedWorkoutBtn = document.getElementById('loadSelectedWorkoutBtn');
+        const workoutSummary = document.getElementById('workoutSummary');
+        const workoutSummaryTitle = document.getElementById('workoutSummaryTitle');
+        const workoutSummaryMeta = document.getElementById('workoutSummaryMeta');
+        const workoutPhaseList = document.getElementById('workoutPhaseList');
+
+        let usingPrescribedPlan = false;
 
         // =============================================
         // PLANO DE TREINO DE CORRIDA — VITÓRIA CARDOSO (12 Semanas)
@@ -791,17 +803,26 @@
             return intervals;
         }
 
-        function createHIITWorkout(sets, activeSecs, restSecs, activeDesc, restDesc, warmupDesc, cooldownDesc) {
+        function createHIITWorkout(sets, activeSecs, restSecs, options = {}) {
+            const {
+                activeDesc,
+                restDesc,
+                warmupSecs = 5 * 60,
+                cooldownSecs = 3 * 60,
+                warmupDesc,
+                cooldownDesc
+            } = options;
+
             return [
-                { name: 'Aquecimento', duration: 5 * 60, intensity: 'Baixa', description: warmupDesc || 'Trote leve para preparar o corpo.' },
+                { name: 'Aquecimento', duration: warmupSecs, intensity: 'Baixa', description: warmupDesc || 'Trote leve para preparar o corpo.' },
                 ...generateHIIT(sets, activeSecs, restSecs, activeDesc, restDesc),
-                { name: 'Desaquecimento', duration: 3 * 60, intensity: 'Baixa', description: cooldownDesc || 'Trote leve até o fim.' }
+                { name: 'Desaquecimento', duration: cooldownSecs, intensity: 'Baixa', description: cooldownDesc || 'Trote leve até o fim.' }
             ];
         }
 
-        function createMICTWorkout(speedDesc) {
+        function createMICTWorkout(speedDesc, durationMins = 30) {
             return [
-                { name: 'Corrida Contínua (MICT)', duration: 30 * 60, intensity: 'Moderada', description: speedDesc }
+                { name: 'Corrida Contínua (MICT)', duration: durationMins * 60, intensity: 'Moderada', description: speedDesc }
             ];
         }
 
@@ -811,41 +832,112 @@
             ];
         }
 
-        // Mês 1
-        const hiitCurto = createHIITWorkout(
-            10, 30, 60,
-            '30s a 11,0 km/h (91–92% vVO₂max)',
-            '1 min de caminhada de recuperação a 8,0 km/h'
-        );
+        function getWorkoutDurationMins(phases) {
+            const totalSecs = phases.reduce((sum, phase) => sum + phase.duration, 0);
+            return Math.round(totalSecs / 60);
+        }
+
+        // Mês 1 — HIIT curto: 28–30 min (8 min aquec. + 10×[30s/60s] + 5 min desaq.)
+        const hiitCurto = createHIITWorkout(10, 30, 60, {
+            activeDesc: '30s a 11,0 km/h (91–92% vVO₂max)',
+            restDesc: '1 min de caminhada de recuperação a 8,0 km/h',
+            warmupSecs: 8 * 60,
+            cooldownSecs: 5 * 60
+        });
         const mictM1 = createMICTWorkout('30 min contínuos entre 8 e 9,5 km/h (Borg 4–6).');
-        const deloadS4 = createRodagemLeve(28, 'Rodagem bem leve, máximo 9,0 km/h. Regeneração do SNC.');
+        const deloadS4 = createRodagemLeve(28, 'Rodagem bem leve, máximo 9,0 km/h. Regeneração do SNC e adaptação tecidual.');
 
-        // Mês 2
-        const hiitLongo = createHIITWorkout(
-            12, 60, 60,
-            '60s a 11,5–12,0 km/h (95–100% vVO₂max)',
-            '60s de caminhada de recuperação (≤ 8,0 km/h)'
-        );
+        // Mês 2 — HIIT longo: 30 min (4 min aquec. + 12×[60s/60s] + 2 min desaq.)
+        const hiitLongo = createHIITWorkout(12, 60, 60, {
+            activeDesc: '60s a 11,5–12,0 km/h (95–100% vVO₂max)',
+            restDesc: '60s de caminhada de recuperação (≤ 8,0 km/h)',
+            warmupSecs: 4 * 60,
+            cooldownSecs: 2 * 60
+        });
         const mictM2 = createMICTWorkout('30 min contínuos a 9–10,0 km/h (Limiar Aeróbio, Borg 6–8).');
-        const deloadS8 = createHIITWorkout(
-            6, 60, 180,
-            '1 min a 10,5 km/h (HIIT regenerativo)',
-            '3 min de caminhada de recuperação',
-            'Trote leve — aquecimento.',
-            'Trote leve — desaquecimento.'
-        );
+        const deloadS8 = createHIITWorkout(6, 60, 180, {
+            activeDesc: '1 min a 10,5 km/h (HIIT regenerativo)',
+            restDesc: '3 min de caminhada de recuperação',
+            warmupSecs: 2 * 60,
+            cooldownSecs: 2 * 60,
+            warmupDesc: 'Trote leve — aquecimento.',
+            cooldownDesc: 'Trote leve — desaquecimento.'
+        });
 
-        // Mês 3
-        const hiitDenso = createHIITWorkout(
-            20, 30, 30,
-            '30s forte a 12,0 km/h (100% vVO₂max)',
-            '30s de pausa/caminhada de recuperação'
-        );
+        // Mês 3 — HIIT alta densidade: 25–30 min (5 min aquec. + 20×[30s/30s] + 3 min desaq.)
+        const hiitDenso = createHIITWorkout(20, 30, 30, {
+            activeDesc: '30s forte a 12,0 km/h (100% vVO₂max)',
+            restDesc: '30s de pausa/caminhada de recuperação',
+            warmupSecs: 5 * 60,
+            cooldownSecs: 3 * 60
+        });
         const mictM3 = createMICTWorkout('30 min contínuos sustentados a 10,0 km/h.');
         const deloadS12Ter = createRodagemLeve(20, 'Rodagem regenerativa a 9,0 km/h.');
         const reavaliacao = [
-            { name: 'Reavaliação', duration: 60, intensity: 'Baixa', description: 'Reavaliação antropométrica e teste de Conconi na esteira com a Profª Joyce.' }
+            {
+                name: 'Reavaliação presencial',
+                duration: 0,
+                intensity: 'Baixa',
+                description: 'Reavaliação antropométrica e teste de Conconi na esteira com a Profª Joyce para recalibrar as velocidades do próximo ciclo.',
+                infoOnly: true
+            }
         ];
+
+        const workoutPrescriptions = {
+            hiitCurto: {
+                title: 'HIIT Curto (Terça/Quinta)',
+                meta: '10 tiros de 30s @ 11,0 km/h · recuperação 1 min @ 8,0 km/h · ~28 min'
+            },
+            mictM1: {
+                title: 'MICT — Cardio Moderado (Sábado)',
+                meta: '30 min contínuos entre 8 e 9,5 km/h · Borg 4–6'
+            },
+            deloadS4: {
+                title: 'Deload — Rodagem Regenerativa',
+                meta: '25–30 min bem leve · máximo 9,0 km/h'
+            },
+            hiitLongo: {
+                title: 'HIIT Longo (Terça/Quinta)',
+                meta: '12 tiros de 60s @ 11,5–12,0 km/h · recuperação 60s · ~30 min'
+            },
+            mictM2: {
+                title: 'MICT — Cardio Moderado (Sábado)',
+                meta: '30 min contínuos a 9–10,0 km/h · Borg 6–8'
+            },
+            deloadS8: {
+                title: 'Deload — HIIT Regenerativo (Terça/Sábado)',
+                meta: '6 tiros de 1 min @ 10,5 km/h · recuperação 3 min · ~28 min'
+            },
+            hiitDenso: {
+                title: 'HIIT Alta Densidade (Terça/Quinta)',
+                meta: '20 tiros de 30s @ 12,0 km/h · pausa 30s · ~28 min'
+            },
+            mictM3: {
+                title: 'MICT — Cardio Moderado (Sábado)',
+                meta: '30 min contínuos a 10,0 km/h'
+            },
+            deloadS12Ter: {
+                title: 'Deload Final — Rodagem Regenerativa',
+                meta: '20 min a 9,0 km/h'
+            },
+            reavaliacao: {
+                title: 'Reavaliação e Teste de Conconi',
+                meta: 'Sessão presencial com a Profª Joyce — sem temporizador'
+            }
+        };
+
+        const workoutKeyByRef = new Map([
+            [hiitCurto, 'hiitCurto'],
+            [mictM1, 'mictM1'],
+            [deloadS4, 'deloadS4'],
+            [hiitLongo, 'hiitLongo'],
+            [mictM2, 'mictM2'],
+            [deloadS8, 'deloadS8'],
+            [hiitDenso, 'hiitDenso'],
+            [mictM3, 'mictM3'],
+            [deloadS12Ter, 'deloadS12Ter'],
+            [reavaliacao, 'reavaliacao']
+        ]);
 
         const fullTrainingPlan = {
             'Semana 1': { 'Terça': hiitCurto, 'Quinta': hiitCurto, 'Sábado': mictM1 },
@@ -868,10 +960,9 @@
         goToTimerPageBtn.addEventListener('click', () => {
             mainInfographicPage.classList.add('hidden');
             timerAppPage.classList.remove('hidden');
-            timerAppPage.style.display = 'flex'; // Garante que a página do temporizador seja exibida como flex
-            populateWeekAndDaySelects(); // Preenche os seletores
-            loadWorkoutConfig(); // Tenta carregar a última configuração salva (personalizada)
-            updateDisplay(); // Atualiza o display inicial
+            timerAppPage.style.display = 'flex';
+            populateWeekAndDaySelects();
+            loadPrescribedWorkout();
         });
 
         backToInfographicBtn.addEventListener('click', () => {
@@ -885,6 +976,7 @@
 
         // Preenche os seletores de semana e dia
         function populateWeekAndDaySelects() {
+            const savedWeek = sessionStorage.getItem('vitoriaSelectedWeek');
             weekSelect.innerHTML = '';
             Object.keys(fullTrainingPlan).forEach(weekName => {
                 const option = document.createElement('option');
@@ -892,7 +984,14 @@
                 option.textContent = weekName;
                 weekSelect.appendChild(option);
             });
+            if (savedWeek && fullTrainingPlan[savedWeek]) {
+                weekSelect.value = savedWeek;
+            }
             populateDaySelectForWeek(weekSelect.value);
+            const savedDay = sessionStorage.getItem('vitoriaSelectedDay');
+            if (savedDay && fullTrainingPlan[weekSelect.value]?.[savedDay]) {
+                daySelect.value = savedDay;
+            }
         }
 
         function populateDaySelectForWeek(weekName) {
@@ -906,8 +1005,66 @@
             });
         }
 
+        function renderWorkoutSummary(weekName, dayName, phases, prescription) {
+            if (!workoutSummary) return;
+
+            workoutSummary.style.display = 'block';
+            workoutSummaryTitle.textContent = `${dayName} — ${prescription.title}`;
+            const duration = getWorkoutDurationMins(phases);
+            const durationLabel = duration > 0 ? ` · ${duration} min no temporizador` : '';
+            workoutSummaryMeta.textContent = `${weekName} · ${prescription.meta}${durationLabel}`;
+
+            workoutPhaseList.innerHTML = '';
+            phases.forEach(phase => {
+                const item = document.createElement('li');
+                const timeLabel = phase.duration > 0 ? `${formatTime(phase.duration)} — ` : '';
+                item.textContent = `${timeLabel}${phase.name}: ${phase.description}`;
+                workoutPhaseList.appendChild(item);
+            });
+        }
+
+        function loadPrescribedWorkout() {
+            const selectedWeek = weekSelect.value;
+            const selectedDay = daySelect.value;
+            const planDay = fullTrainingPlan[selectedWeek]?.[selectedDay];
+
+            sessionStorage.setItem('vitoriaSelectedWeek', selectedWeek);
+            sessionStorage.setItem('vitoriaSelectedDay', selectedDay);
+
+            if (!planDay) {
+                usingPrescribedPlan = false;
+                workoutConfig = [];
+                workoutSummary.style.display = 'none';
+                resetTimer();
+                return;
+            }
+
+            usingPrescribedPlan = true;
+            workoutConfig = JSON.parse(JSON.stringify(planDay));
+            numSetsInput.value = 1;
+
+            const prescriptionKey = workoutKeyByRef.get(planDay) || 'hiitCurto';
+            const prescription = workoutPrescriptions[prescriptionKey];
+            renderWorkoutSummary(selectedWeek, selectedDay, workoutConfig, prescription);
+
+            const isInfoOnly = workoutConfig.every(phase => phase.infoOnly || phase.duration === 0);
+            startBtn.disabled = isInfoOnly;
+            if (isInfoOnly && workoutConfig[0]) {
+                currentPhaseName.textContent = workoutConfig[0].name;
+                phaseInstructions.textContent = workoutConfig[0].description;
+                currentSetDisplay.textContent = 'Sessão presencial — sem temporizador';
+            } else {
+                resetTimer();
+            }
+        }
+
         weekSelect.addEventListener('change', () => {
             populateDaySelectForWeek(weekSelect.value);
+            loadPrescribedWorkout();
+        });
+
+        daySelect.addEventListener('change', () => {
+            loadPrescribedWorkout();
         });
 
         // Adiciona uma nova linha de fase na configuração
@@ -990,14 +1147,16 @@
         });
 
         // Carrega a configuração do localStorage (personalizada)
-        function loadWorkoutConfig() { // Definida no escopo global
+        function loadWorkoutConfig() {
             const savedConfig = localStorage.getItem('customWorkoutConfig');
             const savedNumSets = localStorage.getItem('customNumSets');
             if (savedConfig) {
+                usingPrescribedPlan = false;
+                if (workoutSummary) workoutSummary.style.display = 'none';
                 workoutConfig = JSON.parse(savedConfig);
                 numSetsInput.value = savedNumSets || 1;
                 renderPhasesConfig();
-                resetTimer(); // Reinicia o timer com a nova configuração
+                resetTimer();
             }
         }
 
@@ -1008,18 +1167,7 @@
 
         // Carrega o treino do plano completo com base na seleção
         loadSelectedWorkoutBtn.addEventListener('click', () => {
-            const selectedWeek = weekSelect.value;
-            const selectedDay = daySelect.value;
-            
-            if (fullTrainingPlan[selectedWeek] && fullTrainingPlan[selectedWeek][selectedDay]) {
-                workoutConfig = fullTrainingPlan[selectedWeek][selectedDay];
-                numSetsInput.value = 1; // Treinos do plano geralmente são 1 série, ajuste se necessário
-                renderPhasesConfig();
-                alert(`Treino de ${selectedDay} da ${selectedWeek} carregado!`);
-                resetTimer(); // Reinicia o timer com o treino carregado
-            } else {
-                alert('Treino não encontrado para a seleção. Por favor, verifique o plano.');
-            }
+            loadPrescribedWorkout();
         });
 
         // Adiciona fase ao clicar no botão
@@ -1059,18 +1207,23 @@
 
         function updateDisplay() {
             const totalSets = parseInt(numSetsInput.value);
-            currentSetDisplay.textContent = `Série: ${currentSet}/${totalSets}`;
+            if (usingPrescribedPlan && workoutConfig.length > 0) {
+                const phaseNum = Math.min(currentPhaseIndex + 1, workoutConfig.length);
+                currentSetDisplay.textContent = `Fase: ${phaseNum}/${workoutConfig.length}`;
+            } else {
+                currentSetDisplay.textContent = `Série: ${currentSet}/${totalSets}`;
+            }
             timeLeftDisplay.textContent = formatTime(timeLeft);
 
             if (workoutConfig.length > 0) {
                 const currentPhase = workoutConfig[currentPhaseIndex];
                 currentPhaseName.textContent = currentPhase.name;
-                phaseInstructions.textContent = currentPhase.description || ''; // Exibe a descrição
-                applyTimerColor(currentPhase.intensity); // Aplica a cor aqui
+                phaseInstructions.textContent = currentPhase.description || '';
+                applyTimerColor(currentPhase.intensity);
             } else {
-                currentPhaseName.textContent = "Nenhuma Fase Configurada";
-                phaseInstructions.textContent = ""; // Limpa a descrição
-                applyTimerColor(null); // Reseta a cor se não houver fase
+                currentPhaseName.textContent = 'Selecione semana e dia';
+                phaseInstructions.textContent = '';
+                applyTimerColor(null);
             }
         }
 
@@ -1101,9 +1254,9 @@
         }
 
         function startTimer() {
-            if (timerIntervalId) return; // Já está a correr
+            if (timerIntervalId) return;
             if (workoutConfig.length === 0 || workoutConfig.every(phase => phase.duration === 0)) {
-                alert("Por favor, configure pelo menos uma fase de treino com duração válida.");
+                alert('Selecione um treino do plano com temporizador (semana e dia).');
                 return;
             }
 
@@ -1144,14 +1297,15 @@
             timerIntervalId = null;
             currentPhaseIndex = 0;
             currentSet = 1;
-            timeLeft = 0;
+            timeLeft = workoutConfig.length > 0 ? workoutConfig[0].duration : 0;
             isPaused = false;
             updateDisplay();
-            startBtn.disabled = false;
+            const isInfoOnly = workoutConfig.every(phase => phase.infoOnly || phase.duration === 0);
+            startBtn.disabled = isInfoOnly || workoutConfig.length === 0;
             pauseBtn.disabled = true;
             resetBtn.disabled = false;
             skipBtn.disabled = true;
-            applyTimerColor(null); // Reseta a cor no reset
+            applyTimerColor(null);
         }
 
         function skipPhase() {
