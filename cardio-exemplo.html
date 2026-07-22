@@ -305,6 +305,18 @@
             display: none !important;
         }
 
+        html.access-expired #page-code-gate {
+            display: none !important;
+        }
+
+        html.page-code-locked #page-code-gate {
+            display: flex;
+        }
+
+        html.page-code-locked #app-content {
+            display: none !important;
+        }
+
         .access-badge {
             display: inline-block;
             font-size: 0.75rem;
@@ -317,7 +329,7 @@
             color: var(--verde-dark);
         }
 
-        #timer-code-gate {
+        #page-code-gate {
             display: none;
             flex-direction: column;
             align-items: center;
@@ -327,11 +339,7 @@
             background-color: var(--bg);
         }
 
-        #timer-code-gate.active {
-            display: flex;
-        }
-
-        .timer-code-card {
+        .page-code-card {
             background: #fff;
             border-left: 4px solid var(--verde);
             border-radius: 12px;
@@ -341,13 +349,12 @@
             box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08);
         }
 
-        .timer-code-input {
+        .page-code-input {
             width: 100%;
             text-align: center;
             font-size: 1.25rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
+            letter-spacing: 0.08em;
             padding: 0.75rem 1rem;
             border: 2px solid var(--verde-light);
             border-radius: 8px;
@@ -355,12 +362,12 @@
             background: #fff;
         }
 
-        .timer-code-input:focus {
+        .page-code-input:focus {
             outline: none;
             border-color: var(--verde);
         }
 
-        .timer-code-error {
+        .page-code-error {
             color: #b91c1c;
             font-size: 0.875rem;
             margin-top: 0.75rem;
@@ -373,23 +380,50 @@
             nome: 'Vitória Cardoso',
             acessoValidoDesde: '2026-07-27',
             acessoValidoAte: '2026-10-19',
-            codigoTemporizador: 'vitória01',
+            codigoAcesso: 'vitória01',
             bloqueioAtivo: true
         };
 
+        const PAGE_UNLOCK_KEY = 'vitoriaPageAccess';
+
+        function normalizeAccessCode(value) {
+            return (value || '').trim().toLocaleLowerCase('pt-BR');
+        }
+
         (function () {
             const cfg = window.STUDENT_ACCESS;
-            if (!cfg || !cfg.bloqueioAtivo) return;
+            if (!cfg) return;
+
             const agora = new Date();
             const inicio = cfg.acessoValidoDesde ? new Date(cfg.acessoValidoDesde + 'T00:00:00') : null;
             const fim = new Date(cfg.acessoValidoAte + 'T23:59:59');
-            if ((inicio && agora < inicio) || agora > fim) {
+
+            if (cfg.bloqueioAtivo && ((inicio && agora < inicio) || agora > fim)) {
                 document.documentElement.classList.add('access-expired');
+                return;
+            }
+
+            if (cfg.codigoAcesso && sessionStorage.getItem(PAGE_UNLOCK_KEY) !== cfg.codigoAcesso) {
+                document.documentElement.classList.add('page-code-locked');
             }
         })();
     </script>
 </head>
 <body>
+
+    <div id="page-code-gate">
+        <div class="page-code-card">
+            <p class="text-sm uppercase tracking-widest font-bold mb-4 text-center" style="color: var(--verde)">Profª Joyce Neres</p>
+            <h2 class="text-2xl font-bold text-center mb-2 section-heading">Protocolo de corrida</h2>
+            <p class="text-center mb-6" style="color: var(--cinza)">Olá, Vitória! Digite seu código pessoal para acessar seu protocolo de corrida.</p>
+            <form id="pageCodeForm">
+                <label for="pageCodeInput" class="block text-sm font-semibold mb-2" style="color: var(--preto)">Código de acesso</label>
+                <input type="password" id="pageCodeInput" class="page-code-input" placeholder="Seu código" autocomplete="off" maxlength="20" required>
+                <p id="pageCodeError" class="page-code-error" aria-live="polite"></p>
+                <button type="submit" class="nav-button w-full" style="margin-top: 1rem;">Acessar protocolo</button>
+            </form>
+        </div>
+    </div>
 
     <div id="access-lock-screen">
         <p class="text-sm uppercase tracking-widest font-bold mb-4" style="color: var(--verde-light)">Profª Joyce Neres</p>
@@ -671,8 +705,7 @@
 
         <!-- Botão para aceder à página do temporizador -->
         <div class="text-center">
-            <button id="goToTimerPageBtn" class="nav-button">Temporizador de Treino 🔒</button>
-            <p class="text-sm mt-3" style="color: var(--cinza)">Acesso ao temporizador mediante código pessoal.</p>
+            <button id="goToTimerPageBtn" class="nav-button">Temporizador de Treino</button>
         </div>
 
         <!-- Rodapé do infográfico -->
@@ -680,22 +713,6 @@
             <p style="color: var(--cinza)">Com foco e dedicação, os resultados na composição corporal são garantidos!</p>
         </footer>
 
-    </div>
-
-    <!-- Tela de código do temporizador -->
-    <div id="timer-code-gate">
-        <div class="timer-code-card">
-            <p class="text-sm uppercase tracking-widest font-bold mb-4 text-center" style="color: var(--verde)">Acesso restrito</p>
-            <h2 class="text-2xl font-bold text-center mb-2 section-heading">Temporizador de treino</h2>
-            <p class="text-center mb-6" style="color: var(--cinza)">Digite o código fornecido pela Profª Joyce para acessar seu temporizador.</p>
-            <form id="timerCodeForm">
-                <label for="timerCodeInput" class="block text-sm font-semibold mb-2" style="color: var(--preto)">Código de acesso</label>
-                <input type="password" id="timerCodeInput" class="timer-code-input" placeholder="••••••••••" autocomplete="off" maxlength="20" required>
-                <p id="timerCodeError" class="timer-code-error" aria-live="polite"></p>
-                <button type="submit" class="nav-button w-full" style="margin-top: 1rem;">Entrar no temporizador</button>
-            </form>
-            <button id="backFromCodeGateBtn" class="w-full mt-4 py-3 font-semibold rounded-lg" style="color: var(--verde); background: transparent; border: 2px solid var(--verde); cursor: pointer;">Voltar ao protocolo</button>
-        </div>
     </div>
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
@@ -762,6 +779,30 @@
     </div>
 
     <script>
+        (function initPageCodeGate() {
+            const form = document.getElementById('pageCodeForm');
+            const input = document.getElementById('pageCodeInput');
+            const errorEl = document.getElementById('pageCodeError');
+            if (!form || !input) return;
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const cfg = window.STUDENT_ACCESS;
+                const entered = normalizeAccessCode(input.value);
+                const expected = normalizeAccessCode(cfg?.codigoAcesso);
+
+                if (!expected || entered === expected) {
+                    sessionStorage.setItem(PAGE_UNLOCK_KEY, cfg.codigoAcesso);
+                    document.documentElement.classList.remove('page-code-locked');
+                    errorEl.textContent = '';
+                    return;
+                }
+
+                errorEl.textContent = 'Código incorreto. Verifique com a Profª Joyce e tente novamente.';
+                input.select();
+            });
+        })();
+
         (function initAccessUI() {
             const cfg = window.STUDENT_ACCESS;
             if (!cfg) return;
@@ -820,16 +861,9 @@
 
         // --- Referências de Elementos HTML ---
         const mainInfographicPage = document.getElementById('main-infographic-page');
-        const timerCodeGate = document.getElementById('timer-code-gate');
         const timerAppPage = document.getElementById('timer-app-page');
         const goToTimerPageBtn = document.getElementById('goToTimerPageBtn');
         const backToInfographicBtn = document.getElementById('backToInfographicBtn');
-        const timerCodeForm = document.getElementById('timerCodeForm');
-        const timerCodeInput = document.getElementById('timerCodeInput');
-        const timerCodeError = document.getElementById('timerCodeError');
-        const backFromCodeGateBtn = document.getElementById('backFromCodeGateBtn');
-
-        const TIMER_UNLOCK_KEY = 'vitoriaTimerUnlocked';
 
         const currentPhaseName = document.getElementById('currentPhaseName');
         const timeLeftDisplay = document.getElementById('timeLeftDisplay');
@@ -1033,78 +1067,19 @@
         };
 
         // --- Funções de Navegação de Página ---
-        function isTimerUnlocked() {
-            const cfg = window.STUDENT_ACCESS;
-            if (!cfg?.codigoTemporizador) return true;
-            return sessionStorage.getItem(TIMER_UNLOCK_KEY) === cfg.codigoTemporizador;
-        }
-
-        function showInfographicPage() {
-            mainInfographicPage.classList.remove('hidden');
-            timerCodeGate.classList.remove('active');
-            timerAppPage.classList.add('hidden');
-            timerAppPage.style.display = 'none';
-        }
-
-        function showTimerCodeGate() {
+        goToTimerPageBtn.addEventListener('click', () => {
             mainInfographicPage.classList.add('hidden');
-            timerCodeGate.classList.add('active');
-            timerAppPage.classList.add('hidden');
-            timerAppPage.style.display = 'none';
-            timerCodeError.textContent = '';
-            timerCodeInput.value = '';
-            timerCodeInput.focus();
-        }
-
-        function showTimerApp() {
-            mainInfographicPage.classList.add('hidden');
-            timerCodeGate.classList.remove('active');
             timerAppPage.classList.remove('hidden');
             timerAppPage.style.display = 'flex';
             populateWeekAndDaySelects();
             loadPrescribedWorkout();
-        }
-
-        function openTimerFlow() {
-            if (isTimerUnlocked()) {
-                showTimerApp();
-            } else {
-                showTimerCodeGate();
-            }
-        }
-
-        function normalizeAccessCode(value) {
-            return (value || '').trim().toLocaleLowerCase('pt-BR');
-        }
-
-        timerCodeForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const cfg = window.STUDENT_ACCESS;
-            const entered = normalizeAccessCode(timerCodeInput.value);
-            const expected = normalizeAccessCode(cfg?.codigoTemporizador);
-
-            if (!expected) {
-                showTimerApp();
-                return;
-            }
-
-            if (entered === expected) {
-                sessionStorage.setItem(TIMER_UNLOCK_KEY, cfg.codigoTemporizador);
-                timerCodeError.textContent = '';
-                showTimerApp();
-            } else {
-                timerCodeError.textContent = 'Código incorreto. Verifique com a Profª Joyce e tente novamente.';
-                timerCodeInput.select();
-            }
         });
-
-        goToTimerPageBtn.addEventListener('click', openTimerFlow);
-
-        backFromCodeGateBtn.addEventListener('click', showInfographicPage);
 
         backToInfographicBtn.addEventListener('click', () => {
             pauseTimer();
-            showInfographicPage();
+            mainInfographicPage.classList.remove('hidden');
+            timerAppPage.classList.add('hidden');
+            timerAppPage.style.display = 'none';
         });
 
         // --- Funções de Configuração do Treino ---
