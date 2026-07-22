@@ -316,12 +316,64 @@
             background: #e8f5ee;
             color: var(--verde-dark);
         }
+
+        #timer-code-gate {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            background-color: var(--bg);
+        }
+
+        #timer-code-gate.active {
+            display: flex;
+        }
+
+        .timer-code-card {
+            background: #fff;
+            border-left: 4px solid var(--verde);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08);
+        }
+
+        .timer-code-input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--verde-light);
+            border-radius: 8px;
+            color: var(--preto);
+            background: #fff;
+        }
+
+        .timer-code-input:focus {
+            outline: none;
+            border-color: var(--verde);
+        }
+
+        .timer-code-error {
+            color: #b91c1c;
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            min-height: 1.25rem;
+            text-align: center;
+        }
     </style>
     <script>
         window.STUDENT_ACCESS = {
             nome: 'Vitória Cardoso',
             acessoValidoDesde: '2026-07-27',
             acessoValidoAte: '2026-10-19',
+            codigoTemporizador: 'VITORIA2710',
             bloqueioAtivo: true
         };
 
@@ -619,7 +671,8 @@
 
         <!-- Botão para aceder à página do temporizador -->
         <div class="text-center">
-            <button id="goToTimerPageBtn" class="nav-button">Temporizador de Treino</button>
+            <button id="goToTimerPageBtn" class="nav-button">Temporizador de Treino 🔒</button>
+            <p class="text-sm mt-3" style="color: var(--cinza)">Acesso ao temporizador mediante código pessoal.</p>
         </div>
 
         <!-- Rodapé do infográfico -->
@@ -627,6 +680,22 @@
             <p style="color: var(--cinza)">Com foco e dedicação, os resultados na composição corporal são garantidos!</p>
         </footer>
 
+    </div>
+
+    <!-- Tela de código do temporizador -->
+    <div id="timer-code-gate">
+        <div class="timer-code-card">
+            <p class="text-sm uppercase tracking-widest font-bold mb-4 text-center" style="color: var(--verde)">Acesso restrito</p>
+            <h2 class="text-2xl font-bold text-center mb-2 section-heading">Temporizador de treino</h2>
+            <p class="text-center mb-6" style="color: var(--cinza)">Digite o código fornecido pela Profª Joyce para acessar seu temporizador.</p>
+            <form id="timerCodeForm">
+                <label for="timerCodeInput" class="block text-sm font-semibold mb-2" style="color: var(--preto)">Código de acesso</label>
+                <input type="password" id="timerCodeInput" class="timer-code-input" placeholder="••••••••••" autocomplete="off" maxlength="20" required>
+                <p id="timerCodeError" class="timer-code-error" aria-live="polite"></p>
+                <button type="submit" class="nav-button w-full" style="margin-top: 1rem;">Entrar no temporizador</button>
+            </form>
+            <button id="backFromCodeGateBtn" class="w-full mt-4 py-3 font-semibold rounded-lg" style="color: var(--verde); background: transparent; border: 2px solid var(--verde); cursor: pointer;">Voltar ao protocolo</button>
+        </div>
     </div>
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
@@ -751,9 +820,16 @@
 
         // --- Referências de Elementos HTML ---
         const mainInfographicPage = document.getElementById('main-infographic-page');
+        const timerCodeGate = document.getElementById('timer-code-gate');
         const timerAppPage = document.getElementById('timer-app-page');
         const goToTimerPageBtn = document.getElementById('goToTimerPageBtn');
         const backToInfographicBtn = document.getElementById('backToInfographicBtn');
+        const timerCodeForm = document.getElementById('timerCodeForm');
+        const timerCodeInput = document.getElementById('timerCodeInput');
+        const timerCodeError = document.getElementById('timerCodeError');
+        const backFromCodeGateBtn = document.getElementById('backFromCodeGateBtn');
+
+        const TIMER_UNLOCK_KEY = 'vitoriaTimerUnlocked';
 
         const currentPhaseName = document.getElementById('currentPhaseName');
         const timeLeftDisplay = document.getElementById('timeLeftDisplay');
@@ -957,19 +1033,74 @@
         };
 
         // --- Funções de Navegação de Página ---
-        goToTimerPageBtn.addEventListener('click', () => {
+        function isTimerUnlocked() {
+            const cfg = window.STUDENT_ACCESS;
+            if (!cfg?.codigoTemporizador) return true;
+            return sessionStorage.getItem(TIMER_UNLOCK_KEY) === cfg.codigoTemporizador;
+        }
+
+        function showInfographicPage() {
+            mainInfographicPage.classList.remove('hidden');
+            timerCodeGate.classList.remove('active');
+            timerAppPage.classList.add('hidden');
+            timerAppPage.style.display = 'none';
+        }
+
+        function showTimerCodeGate() {
             mainInfographicPage.classList.add('hidden');
+            timerCodeGate.classList.add('active');
+            timerAppPage.classList.add('hidden');
+            timerAppPage.style.display = 'none';
+            timerCodeError.textContent = '';
+            timerCodeInput.value = '';
+            timerCodeInput.focus();
+        }
+
+        function showTimerApp() {
+            mainInfographicPage.classList.add('hidden');
+            timerCodeGate.classList.remove('active');
             timerAppPage.classList.remove('hidden');
             timerAppPage.style.display = 'flex';
             populateWeekAndDaySelects();
             loadPrescribedWorkout();
+        }
+
+        function openTimerFlow() {
+            if (isTimerUnlocked()) {
+                showTimerApp();
+            } else {
+                showTimerCodeGate();
+            }
+        }
+
+        timerCodeForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const cfg = window.STUDENT_ACCESS;
+            const entered = timerCodeInput.value.trim().toUpperCase();
+            const expected = (cfg?.codigoTemporizador || '').toUpperCase();
+
+            if (!expected) {
+                showTimerApp();
+                return;
+            }
+
+            if (entered === expected) {
+                sessionStorage.setItem(TIMER_UNLOCK_KEY, cfg.codigoTemporizador);
+                timerCodeError.textContent = '';
+                showTimerApp();
+            } else {
+                timerCodeError.textContent = 'Código incorreto. Verifique com a Profª Joyce e tente novamente.';
+                timerCodeInput.select();
+            }
         });
 
+        goToTimerPageBtn.addEventListener('click', openTimerFlow);
+
+        backFromCodeGateBtn.addEventListener('click', showInfographicPage);
+
         backToInfographicBtn.addEventListener('click', () => {
-            pauseTimer(); // Pausa o timer ao voltar
-            mainInfographicPage.classList.remove('hidden');
-            timerAppPage.classList.add('hidden');
-            timerAppPage.style.display = 'none'; // Esconde a página do temporizador
+            pauseTimer();
+            showInfographicPage();
         });
 
         // --- Funções de Configuração do Treino ---
