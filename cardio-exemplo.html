@@ -132,9 +132,9 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
-            padding: 1rem;
+            padding: 1rem 1rem 2rem;
             background-color: var(--bg);
             color: var(--preto);
         }
@@ -717,10 +717,8 @@
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
     <div id="timer-app-page" class="timer-page hidden">
-        <h1 class="text-4xl md:text-7xl font-black hero-display-title mb-8 text-center leading-tight tracking-tight" style="font-family:'Playfair Display',serif;font-style:italic">TEMPORIZADOR DE <span class="hero-accent" style="color:var(--verde)">TREINO</span></h1>
-
         <!-- Seletores de Semana e Dia -->
-        <div class="config-section mb-8">
+        <div class="config-section mb-8" style="margin-top: 0;">
             <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Treino do plano — Vitória Cardoso</h2>
             <div class="flex flex-col md:flex-row gap-4 mb-4">
                 <div class="flex-1">
@@ -731,13 +729,6 @@
                     <label for="daySelect" class="block text-lg mb-2" style="color: var(--preto)">Dia da Semana:</label>
                     <select id="daySelect" class="w-full"></select>
                 </div>
-            </div>
-            <button id="loadSelectedWorkoutBtn" class="nav-button w-full">Atualizar prescrição do dia</button>
-            <div id="workoutSummary" class="mt-6 p-4 rounded-lg text-left" style="background:#fff;border:1px solid var(--verde-light);display:none">
-                <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color:var(--verde)">Prescrição carregada</p>
-                <p id="workoutSummaryTitle" class="font-bold text-lg mb-1" style="color:var(--preto)"></p>
-                <p id="workoutSummaryMeta" class="text-sm mb-3" style="color:var(--cinza)"></p>
-                <ol id="workoutPhaseList" class="text-sm space-y-1 list-decimal list-inside" style="color:var(--cinza)"></ol>
             </div>
         </div>
 
@@ -883,11 +874,6 @@
 
         const weekSelect = document.getElementById('weekSelect');
         const daySelect = document.getElementById('daySelect');
-        const loadSelectedWorkoutBtn = document.getElementById('loadSelectedWorkoutBtn');
-        const workoutSummary = document.getElementById('workoutSummary');
-        const workoutSummaryTitle = document.getElementById('workoutSummaryTitle');
-        const workoutSummaryMeta = document.getElementById('workoutSummaryMeta');
-        const workoutPhaseList = document.getElementById('workoutPhaseList');
 
         let usingPrescribedPlan = false;
 
@@ -942,11 +928,6 @@
             ];
         }
 
-        function getWorkoutDurationMins(phases) {
-            const totalSecs = phases.reduce((sum, phase) => sum + phase.duration, 0);
-            return Math.round(totalSecs / 60);
-        }
-
         // Mês 1 — HIIT curto: 28–30 min (8 min aquec. + 10×[30s/60s] + 5 min desaq.)
         const hiitCurto = createHIITWorkout(10, 30, 60, {
             activeDesc: '30s a 11,0 km/h (91–92% vVO₂max)',
@@ -993,62 +974,6 @@
             }
         ];
 
-        const workoutPrescriptions = {
-            hiitCurto: {
-                title: 'HIIT Curto (Terça/Quinta)',
-                meta: '10 tiros de 30s @ 11,0 km/h · recuperação 1 min @ 8,0 km/h · ~28 min'
-            },
-            mictM1: {
-                title: 'MICT — Cardio Moderado (Sábado)',
-                meta: '30 min contínuos entre 8 e 9,5 km/h · Borg 4–6'
-            },
-            deloadS4: {
-                title: 'Deload — Rodagem Regenerativa',
-                meta: '25–30 min bem leve · máximo 9,0 km/h'
-            },
-            hiitLongo: {
-                title: 'HIIT Longo (Terça/Quinta)',
-                meta: '12 tiros de 60s @ 11,5–12,0 km/h · recuperação 60s · ~30 min'
-            },
-            mictM2: {
-                title: 'MICT — Cardio Moderado (Sábado)',
-                meta: '30 min contínuos a 9–10,0 km/h · Borg 6–8'
-            },
-            deloadS8: {
-                title: 'Deload — HIIT Regenerativo (Terça/Sábado)',
-                meta: '6 tiros de 1 min @ 10,5 km/h · recuperação 3 min · ~28 min'
-            },
-            hiitDenso: {
-                title: 'HIIT Alta Densidade (Terça/Quinta)',
-                meta: '20 tiros de 30s @ 12,0 km/h · pausa 30s · ~28 min'
-            },
-            mictM3: {
-                title: 'MICT — Cardio Moderado (Sábado)',
-                meta: '30 min contínuos a 10,0 km/h'
-            },
-            deloadS12Ter: {
-                title: 'Deload Final — Rodagem Regenerativa',
-                meta: '20 min a 9,0 km/h'
-            },
-            reavaliacao: {
-                title: 'Reavaliação e Teste de Conconi',
-                meta: 'Sessão presencial com a Profª Joyce — sem temporizador'
-            }
-        };
-
-        const workoutKeyByRef = new Map([
-            [hiitCurto, 'hiitCurto'],
-            [mictM1, 'mictM1'],
-            [deloadS4, 'deloadS4'],
-            [hiitLongo, 'hiitLongo'],
-            [mictM2, 'mictM2'],
-            [deloadS8, 'deloadS8'],
-            [hiitDenso, 'hiitDenso'],
-            [mictM3, 'mictM3'],
-            [deloadS12Ter, 'deloadS12Ter'],
-            [reavaliacao, 'reavaliacao']
-        ]);
-
         const fullTrainingPlan = {
             'Semana 1': { 'Terça': hiitCurto, 'Quinta': hiitCurto, 'Sábado': mictM1 },
             'Semana 2': { 'Terça': hiitCurto, 'Quinta': hiitCurto, 'Sábado': mictM1 },
@@ -1067,13 +992,16 @@
         };
 
         // --- Funções de Navegação de Página ---
-        goToTimerPageBtn.addEventListener('click', () => {
+        function openTimerPage() {
             mainInfographicPage.classList.add('hidden');
             timerAppPage.classList.remove('hidden');
             timerAppPage.style.display = 'flex';
+            window.scrollTo(0, 0);
             populateWeekAndDaySelects();
             loadPrescribedWorkout();
-        });
+        }
+
+        goToTimerPageBtn.addEventListener('click', openTimerPage);
 
         backToInfographicBtn.addEventListener('click', () => {
             pauseTimer();
@@ -1115,24 +1043,6 @@
             });
         }
 
-        function renderWorkoutSummary(weekName, dayName, phases, prescription) {
-            if (!workoutSummary) return;
-
-            workoutSummary.style.display = 'block';
-            workoutSummaryTitle.textContent = `${dayName} — ${prescription.title}`;
-            const duration = getWorkoutDurationMins(phases);
-            const durationLabel = duration > 0 ? ` · ${duration} min no temporizador` : '';
-            workoutSummaryMeta.textContent = `${weekName} · ${prescription.meta}${durationLabel}`;
-
-            workoutPhaseList.innerHTML = '';
-            phases.forEach(phase => {
-                const item = document.createElement('li');
-                const timeLabel = phase.duration > 0 ? `${formatTime(phase.duration)} — ` : '';
-                item.textContent = `${timeLabel}${phase.name}: ${phase.description}`;
-                workoutPhaseList.appendChild(item);
-            });
-        }
-
         function loadPrescribedWorkout() {
             const selectedWeek = weekSelect.value;
             const selectedDay = daySelect.value;
@@ -1144,7 +1054,6 @@
             if (!planDay) {
                 usingPrescribedPlan = false;
                 workoutConfig = [];
-                workoutSummary.style.display = 'none';
                 resetTimer();
                 return;
             }
@@ -1152,10 +1061,6 @@
             usingPrescribedPlan = true;
             workoutConfig = JSON.parse(JSON.stringify(planDay));
             numSetsInput.value = 1;
-
-            const prescriptionKey = workoutKeyByRef.get(planDay) || 'hiitCurto';
-            const prescription = workoutPrescriptions[prescriptionKey];
-            renderWorkoutSummary(selectedWeek, selectedDay, workoutConfig, prescription);
 
             const isInfoOnly = workoutConfig.every(phase => phase.infoOnly || phase.duration === 0);
             startBtn.disabled = isInfoOnly;
@@ -1262,7 +1167,6 @@
             const savedNumSets = localStorage.getItem('customNumSets');
             if (savedConfig) {
                 usingPrescribedPlan = false;
-                if (workoutSummary) workoutSummary.style.display = 'none';
                 workoutConfig = JSON.parse(savedConfig);
                 numSetsInput.value = savedNumSets || 1;
                 renderPhasesConfig();
@@ -1270,14 +1174,9 @@
             }
         }
 
-        loadConfigBtn.addEventListener('click', () => { // Event listener para o botão de carregar
+        loadConfigBtn.addEventListener('click', () => {
             loadWorkoutConfig();
-            alert('Configuração personalizada carregada!'); // Adicionado de volta para o clique do botão
-        });
-
-        // Carrega o treino do plano completo com base na seleção
-        loadSelectedWorkoutBtn.addEventListener('click', () => {
-            loadPrescribedWorkout();
+            alert('Configuração personalizada carregada!');
         });
 
         // Adiciona fase ao clicar no botão
