@@ -928,38 +928,34 @@
             ];
         }
 
-        // Mês 1 — HIIT curto: 28–30 min (8 min aquec. + 10×[30s/60s] + 5 min desaq.)
+        // Mês 1 — HIIT curto (5 min aquec. + 10×[30s/60s] + 5 min desaq.)
         const hiitCurto = createHIITWorkout(10, 30, 60, {
             activeDesc: '30s a 11,0 km/h (91–92% vVO₂max)',
             restDesc: '1 min de caminhada de recuperação a 8,0 km/h',
-            warmupSecs: 8 * 60,
             cooldownSecs: 5 * 60
         });
         const mictM1 = createMICTWorkout('30 min contínuos entre 8 e 9,5 km/h (Borg 4–6).');
         const deloadS4 = createRodagemLeve(28, 'Rodagem bem leve, máximo 9,0 km/h. Regeneração do SNC e adaptação tecidual.');
 
-        // Mês 2 — HIIT longo: 30 min (4 min aquec. + 12×[60s/60s] + 2 min desaq.)
+        // Mês 2 — HIIT longo (5 min aquec. + 12×[60s/60s] + 2 min desaq.)
         const hiitLongo = createHIITWorkout(12, 60, 60, {
             activeDesc: '60s a 11,5–12,0 km/h (95–100% vVO₂max)',
             restDesc: '60s de caminhada de recuperação (≤ 8,0 km/h)',
-            warmupSecs: 4 * 60,
             cooldownSecs: 2 * 60
         });
         const mictM2 = createMICTWorkout('30 min contínuos a 9–10,0 km/h (Limiar Aeróbio, Borg 6–8).');
         const deloadS8 = createHIITWorkout(6, 60, 180, {
             activeDesc: '1 min a 10,5 km/h (HIIT regenerativo)',
             restDesc: '3 min de caminhada de recuperação',
-            warmupSecs: 2 * 60,
             cooldownSecs: 2 * 60,
             warmupDesc: 'Trote leve — aquecimento.',
             cooldownDesc: 'Trote leve — desaquecimento.'
         });
 
-        // Mês 3 — HIIT alta densidade: 25–30 min (5 min aquec. + 20×[30s/30s] + 3 min desaq.)
+        // Mês 3 — HIIT alta densidade (5 min aquec. + 20×[30s/30s] + 3 min desaq.)
         const hiitDenso = createHIITWorkout(20, 30, 30, {
             activeDesc: '30s forte a 12,0 km/h (100% vVO₂max)',
             restDesc: '30s de pausa/caminhada de recuperação',
-            warmupSecs: 5 * 60,
             cooldownSecs: 3 * 60
         });
         const mictM3 = createMICTWorkout('30 min contínuos sustentados a 10,0 km/h.');
