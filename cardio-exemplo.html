@@ -1073,11 +1073,15 @@
             }
         }
 
+        function normalizeAccessCode(value) {
+            return (value || '').trim().toLocaleLowerCase('pt-BR');
+        }
+
         timerCodeForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const cfg = window.STUDENT_ACCESS;
-            const entered = timerCodeInput.value.trim().toUpperCase();
-            const expected = (cfg?.codigoTemporizador || '').toUpperCase();
+            const entered = normalizeAccessCode(timerCodeInput.value);
+            const expected = normalizeAccessCode(cfg?.codigoTemporizador);
 
             if (!expected) {
                 showTimerApp();
