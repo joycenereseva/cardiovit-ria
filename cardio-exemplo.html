@@ -166,6 +166,12 @@
             }
         }
 
+        .set-display {
+            font-size: 1.5rem;
+            color: var(--cinza);
+            margin-bottom: 2rem;
+        }
+
         .timer-controls button {
             background-color: #FFFFFF;
             color: var(--verde);
@@ -1263,10 +1269,12 @@
                 const currentPhase = workoutConfig[currentPhaseIndex];
                 currentPhaseName.textContent = currentPhase.name;
                 phaseInstructions.textContent = currentPhase.description || '';
+                phaseInstructions.classList.toggle('phase-instruction-cue', usingPrescribedPlan && !!currentPhase.description);
                 applyTimerColor(currentPhase.intensity);
             } else {
                 currentPhaseName.textContent = 'Selecione semana e dia';
                 phaseInstructions.textContent = '';
+                phaseInstructions.classList.remove('phase-instruction-cue');
                 applyTimerColor(null);
             }
         }
