@@ -173,16 +173,16 @@
             }
         }
 
-        .phase-instruction-cue {
-            font-size: 1.35rem;
+        .phase-label-cue {
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--verde-dark);
-            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         @media (min-width: 768px) {
-            .phase-instruction-cue {
-                font-size: 1.5rem;
+            .phase-label-cue {
+                font-size: 2rem;
             }
         }
 
@@ -1300,9 +1300,11 @@
                     phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                 } else if (usingPrescribedPlan) {
                     timeLeftDisplay.style.visibility = 'visible';
-                    currentPhaseName.style.display = 'none';
-                    phaseInstructions.textContent = currentPhase.greenLabel || '';
-                    phaseInstructions.className = 'phase-instruction-cue';
+                    currentPhaseName.style.display = 'block';
+                    currentPhaseName.className = 'phase-label-cue';
+                    currentPhaseName.textContent = currentPhase.greenLabel || '';
+                    phaseInstructions.textContent = currentPhase.name || '';
+                    phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                     applyTimerColor(currentPhase.intensity);
                 } else {
                     timeLeftDisplay.style.visibility = 'visible';
