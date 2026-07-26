@@ -963,14 +963,16 @@
                     `TIRO ${i}/${sets} — ${activeSecs}s`,
                     { ...setMeta, segment: 'tiro' }
                 ));
-                intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs, { ...setMeta, segment: 'prep-recovery' }));
-                intervals.push(workPhase(
-                    `MANTENHA ${recoveryKmh} KM`,
-                    restSecs,
-                    'Baixa',
-                    `RECUPERAÇÃO ${i}/${sets} — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
-                    { ...setMeta, segment: 'recovery' }
-                ));
+                if (i < sets) {
+                    intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs, { ...setMeta, segment: 'prep-recovery' }));
+                    intervals.push(workPhase(
+                        `MANTENHA ${recoveryKmh} KM`,
+                        restSecs,
+                        'Baixa',
+                        `RECUPERAÇÃO ${i}/${sets} — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
+                        { ...setMeta, segment: 'recovery' }
+                    ));
+                }
             }
             return intervals;
         }
