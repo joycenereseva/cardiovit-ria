@@ -947,7 +947,7 @@
             };
         }
 
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4, tiroMaintainLabel = null) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4, tiroMaintainLabel = null, cooldownOptions = null) {
             const maintainLabel = tiroMaintainLabel || `MANTENHA ${tiroKmh} KM`;
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
@@ -972,6 +972,19 @@
                         `RECUPERAÇÃO ${i}/${sets} — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
                         { ...setMeta, segment: 'recovery' }
                     ));
+                } else if (cooldownOptions) {
+                    intervals.push(warningPhase(
+                        `REDUZA PARA ${cooldownOptions.cooldownKmh} KM`,
+                        prepSecs,
+                        { segment: 'prep-cooldown', setIndex: i, setTotal: sets }
+                    ));
+                    intervals.push(workPhase(
+                        cooldownOptions.cooldownLabel,
+                        cooldownOptions.cooldownSecs,
+                        'Baixa',
+                        '5 minutos',
+                        { segment: 'cooldown', setIndex: i, setTotal: sets, isFinalCooldown: true }
+                    ));
                 }
             }
             return intervals;
@@ -987,14 +1000,17 @@
                 cooldownLabel = 'VOLTA A CALMA 6KM',
                 warmupSecs = 5 * 60,
                 cooldownSecs = 5 * 60,
-                prepSecs = 4
+                prepSecs = 4,
+                includeVoltaACalma = true
             } = options;
+
+            const cooldownOptions = includeVoltaACalma
+                ? { cooldownKmh, cooldownLabel, cooldownSecs }
+                : null;
 
             return [
                 workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa', '', { segment: 'warmup' }),
-                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs, tiroMaintainLabel),
-                warningPhase(`REDUZA PARA ${cooldownKmh} KM`, prepSecs, { segment: 'prep-cooldown' }),
-                workPhase(cooldownLabel, cooldownSecs, 'Baixa', '5 minutos', { segment: 'cooldown' })
+                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs, tiroMaintainLabel, cooldownOptions)
             ];
         }
 
@@ -1022,7 +1038,9 @@
                     return 'Aquecimento';
                 case 'prep-cooldown':
                 case 'cooldown':
-                    return 'Volta à calma';
+                    return currentPhase.isFinalCooldown
+                        ? `Volta à calma · após tiro ${setTotal}/${setTotal}`
+                        : 'Volta à calma';
                 case 'prep-tiro':
                     return `Preparar · Tiro ${setIndex}/${setTotal}`;
                 case 'tiro':
