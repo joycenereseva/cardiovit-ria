@@ -942,7 +942,7 @@
             };
         }
 
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 5) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4) {
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
                 const tiroCue = i === 1
@@ -974,7 +974,7 @@
                 cooldownKmh = 6,
                 warmupSecs = 5 * 60,
                 cooldownSecs = 3 * 60,
-                prepSecs = 5
+                prepSecs = 4
             } = options;
 
             return [
@@ -1270,6 +1270,9 @@
                     displayElement.classList.add('text-red-500');
                     phaseNameElement.classList.add('text-red-500');
                     break;
+                case 'Aviso':
+                    displayElement.classList.add('text-red-500');
+                    break;
                 default:
                     // Cor padrão se a intensidade não for reconhecida ou não estiver definida
                     displayElement.classList.add('text-gray-200');
@@ -1286,40 +1289,42 @@
             } else {
                 currentSetDisplay.textContent = `Série: ${currentSet}/${totalSets}`;
             }
-            timeLeftDisplay.textContent = formatTime(timeLeft);
+            timeLeftDisplay.className = 'timer-display';
+            timeLeftDisplay.style.visibility = 'visible';
 
             if (workoutConfig.length > 0) {
                 const currentPhase = workoutConfig[currentPhaseIndex];
 
                 if (usingPrescribedPlan && currentPhase.warning) {
-                    timeLeftDisplay.style.visibility = 'hidden';
                     currentPhaseName.style.display = 'block';
                     currentPhaseName.className = 'phase-warning-title';
                     currentPhaseName.textContent = currentPhase.name;
+                    timeLeftDisplay.textContent = timeLeft > 0 ? String(timeLeft) : '1';
                     phaseInstructions.textContent = '';
                     phaseInstructions.className = 'text-gray-400 text-lg mt-2';
+                    applyTimerColor('Aviso');
                 } else if (usingPrescribedPlan) {
-                    timeLeftDisplay.style.visibility = 'visible';
                     currentPhaseName.style.display = 'block';
                     currentPhaseName.className = 'phase-label-cue';
                     currentPhaseName.textContent = currentPhase.greenLabel || '';
+                    timeLeftDisplay.textContent = formatTime(timeLeft);
                     phaseInstructions.textContent = currentPhase.name || '';
                     phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                     applyTimerColor(currentPhase.intensity);
                 } else {
-                    timeLeftDisplay.style.visibility = 'visible';
                     currentPhaseName.style.display = 'block';
                     currentPhaseName.className = 'phase-display';
                     currentPhaseName.textContent = currentPhase.name;
+                    timeLeftDisplay.textContent = formatTime(timeLeft);
                     phaseInstructions.textContent = currentPhase.description || '';
                     phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                     applyTimerColor(currentPhase.intensity);
                 }
             } else {
-                timeLeftDisplay.style.visibility = 'visible';
                 currentPhaseName.style.display = 'block';
                 currentPhaseName.className = 'phase-display';
                 currentPhaseName.textContent = 'Selecione semana e dia';
+                timeLeftDisplay.textContent = formatTime(timeLeft);
                 phaseInstructions.textContent = '';
                 phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                 applyTimerColor(null);
