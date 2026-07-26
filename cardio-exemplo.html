@@ -982,8 +982,9 @@
                 recoveryKmh = 8,
                 warmupKmh = 6,
                 cooldownKmh = 6,
+                cooldownLabel = 'VOLTA A CALMA 6KM',
                 warmupSecs = 5 * 60,
-                cooldownSecs = 3 * 60,
+                cooldownSecs = 5 * 60,
                 prepSecs = 4
             } = options;
 
@@ -991,7 +992,7 @@
                 workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa', '', { segment: 'warmup' }),
                 ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs, tiroMaintainLabel),
                 warningPhase(`REDUZA PARA ${cooldownKmh} KM`, prepSecs, { segment: 'prep-cooldown' }),
-                workPhase(`MANTENHA ${cooldownKmh} KM`, cooldownSecs, 'Baixa', 'Desaquecimento', { segment: 'cooldown' })
+                workPhase(cooldownLabel, cooldownSecs, 'Baixa', '5 minutos', { segment: 'cooldown' })
             ];
         }
 
@@ -1019,7 +1020,7 @@
                     return 'Aquecimento';
                 case 'prep-cooldown':
                 case 'cooldown':
-                    return 'Desaquecimento';
+                    return 'Volta à calma';
                 case 'prep-tiro':
                     return `Preparar · Tiro ${setIndex}/${setTotal}`;
                 case 'tiro':
@@ -1040,8 +1041,7 @@
         // Mês 1 — aquec. 6 km + 10×(30s tiro / 60s rec.) + desaq. 5 min
         const hiitCurto = createHIITWorkout(10, 30, 60, {
             tiroKmh: '11,0',
-            recoveryKmh: 8,
-            cooldownSecs: 5 * 60
+            recoveryKmh: 8
         });
         const mictM1 = createMICTWorkout('MICT — MANTENHA 8 a 9,5 KM');
         const deloadS4 = createRodagemLeve(28, 'RODAGEM LEVE — MÁX. 9 KM');
@@ -1050,21 +1050,18 @@
         const hiitLongo = createHIITWorkout(12, 60, 60, {
             tiroKmh: '11,5',
             tiroMaintainLabel: 'MANTENHA 11,5 a 12 KM',
-            recoveryKmh: 8,
-            cooldownSecs: 2 * 60
+            recoveryKmh: 8
         });
         const mictM2 = createMICTWorkout('MICT — MANTENHA 9 a 10 KM');
         const deloadS8 = createHIITWorkout(6, 60, 180, {
             tiroKmh: '10,5',
-            recoveryKmh: 8,
-            cooldownSecs: 2 * 60
+            recoveryKmh: 8
         });
 
         // Mês 3 — aquec. 6 km + 20×(30s/30s) + desaq. 3 min
         const hiitDenso = createHIITWorkout(20, 30, 30, {
             tiroKmh: '12,0',
-            recoveryKmh: 8,
-            cooldownSecs: 3 * 60
+            recoveryKmh: 8
         });
         const mictM3 = createMICTWorkout('MICT — MANTENHA 10 KM');
         const deloadS12Ter = createRodagemLeve(20, 'RODAGEM LEVE — 9 KM');
