@@ -173,16 +173,19 @@
             }
         }
 
-        .phase-label-cue {
+        .phase-label-cue,
+        .phase-speed-title {
             font-size: 1.75rem;
-            font-weight: 700;
+            font-weight: 900;
+            color: #dc2626;
             margin-bottom: 0.5rem;
             line-height: 1.2;
         }
 
         @media (min-width: 768px) {
-            .phase-label-cue {
-                font-size: 2rem;
+            .phase-label-cue,
+            .phase-speed-title {
+                font-size: 2.25rem;
             }
         }
 
@@ -1249,34 +1252,33 @@
         // --- Funções do Temporizador ---
 
         // Aplica a cor ao display do temporizador com base na intensidade
-        function applyTimerColor(intensity) {
+        function applyTimerColor(intensity, { syncTitle = true } = {}) {
             const displayElement = timeLeftDisplay;
             const phaseNameElement = currentPhaseName;
 
             // Remove todas as classes de cor existentes
             displayElement.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500', 'text-gray-200');
-            phaseNameElement.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
+            phaseNameElement.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500', 'text-gray-200');
 
             switch (intensity) {
                 case 'Baixa':
                     displayElement.classList.add('text-green-500');
-                    phaseNameElement.classList.add('text-green-500');
+                    if (syncTitle) phaseNameElement.classList.add('text-green-500');
                     break;
                 case 'Moderada':
                     displayElement.classList.add('text-yellow-500');
-                    phaseNameElement.classList.add('text-yellow-500');
+                    if (syncTitle) phaseNameElement.classList.add('text-yellow-500');
                     break;
                 case 'Alta':
                     displayElement.classList.add('text-red-500');
-                    phaseNameElement.classList.add('text-red-500');
+                    if (syncTitle) phaseNameElement.classList.add('text-red-500');
                     break;
                 case 'Aviso':
                     displayElement.classList.add('text-red-500');
                     break;
                 default:
-                    // Cor padrão se a intensidade não for reconhecida ou não estiver definida
                     displayElement.classList.add('text-gray-200');
-                    phaseNameElement.classList.add('text-gray-200'); // Volta para a cor padrão do texto
+                    if (syncTitle) phaseNameElement.classList.add('text-gray-200');
                     break;
             }
         }
@@ -1305,12 +1307,12 @@
                     applyTimerColor('Aviso');
                 } else if (usingPrescribedPlan) {
                     currentPhaseName.style.display = 'block';
-                    currentPhaseName.className = 'phase-label-cue';
+                    currentPhaseName.className = 'phase-speed-title';
                     currentPhaseName.textContent = currentPhase.greenLabel || '';
                     timeLeftDisplay.textContent = formatTime(timeLeft);
                     phaseInstructions.textContent = currentPhase.name || '';
                     phaseInstructions.className = 'text-gray-400 text-lg mt-2';
-                    applyTimerColor(currentPhase.intensity);
+                    applyTimerColor(currentPhase.intensity, { syncTitle: false });
                 } else {
                     currentPhaseName.style.display = 'block';
                     currentPhaseName.className = 'phase-display';
