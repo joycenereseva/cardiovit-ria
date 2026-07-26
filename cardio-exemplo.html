@@ -146,18 +146,16 @@
             margin-bottom: 1rem;
         }
 
-        .speed-cue-display {
+        .phase-warning-title {
             font-size: 1.75rem;
             font-weight: 900;
-            color: var(--verde-dark);
-            margin-bottom: 0.75rem;
-            min-height: 2.5rem;
+            color: #dc2626;
+            margin-bottom: 0.5rem;
             line-height: 1.2;
-            letter-spacing: 0.02em;
         }
 
         @media (min-width: 768px) {
-            .speed-cue-display {
+            .phase-warning-title {
                 font-size: 2.25rem;
             }
         }
@@ -780,7 +778,6 @@
 
         <!-- Área de exibição do temporizador -->
         <div class="text-center mb-8 w-full max-w-2xl">
-            <p class="speed-cue-display" id="speedCueDisplay"></p>
             <p class="phase-display" id="currentPhaseName">Selecione semana e dia</p>
             <p class="timer-display text-gray-200" id="timeLeftDisplay">00:00</p>
             <p class="text-gray-400 text-lg mt-2" id="phaseInstructions"></p>
@@ -904,7 +901,6 @@
         const backToInfographicBtn = document.getElementById('backToInfographicBtn');
 
         const currentPhaseName = document.getElementById('currentPhaseName');
-        const speedCueDisplay = document.getElementById('speedCueDisplay');
         const timeLeftDisplay = document.getElementById('timeLeftDisplay');
         const phaseInstructions = document.getElementById('phaseInstructions');
         const currentSetDisplay = document.getElementById('currentSetDisplay');
@@ -928,33 +924,44 @@
         // =============================================
         // PLANO DE TREINO DE CORRIDA — VITÓRIA CARDOSO (12 Semanas)
         // =============================================
+        function warningPhase(message, duration) {
+            return {
+                warning: true,
+                name: message,
+                duration,
+                intensity: 'Aviso'
+            };
+        }
+
+        function workPhase(greenLabel, duration, intensity, phaseLabel = '') {
+            return {
+                name: phaseLabel,
+                greenLabel,
+                duration,
+                intensity
+            };
+        }
+
         function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 5) {
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
                 const tiroCue = i === 1
                     ? `AUMENTE RÁPIDO PARA ${tiroKmh} KM`
                     : `AUMENTE PARA ${tiroKmh} KM`;
-                intervals.push({
-                    name: 'Prepare a esteira',
-                    speedCue: tiroCue,
-                    duration: prepSecs,
-                    intensity: 'Moderada',
-                    description: 'Ajuste a velocidade — o tiro começa ao zerar.'
-                });
-                intervals.push({
-                    name: `TIRO — ${activeSecs}s`,
-                    speedCue: tiroCue,
-                    duration: activeSecs,
-                    intensity: 'Alta',
-                    description: `MANTENHA ${tiroKmh} KM`
-                });
-                intervals.push({
-                    name: `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
-                    speedCue: `REDUZA PARA ${recoveryKmh} KM`,
-                    duration: restSecs,
-                    intensity: 'Baixa',
-                    description: 'Recupere o fôlego ativamente.'
-                });
+                intervals.push(warningPhase(tiroCue, prepSecs));
+                intervals.push(workPhase(
+                    `MANTENHA ${tiroKmh} KM`,
+                    activeSecs,
+                    'Alta',
+                    `TIRO — ${activeSecs}s`
+                ));
+                intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs));
+                intervals.push(workPhase(
+                    `MANTENHA ${recoveryKmh} KM`,
+                    restSecs,
+                    'Baixa',
+                    `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`
+                ));
             }
             return intervals;
         }
@@ -971,45 +978,22 @@
             } = options;
 
             return [
-                {
-                    name: 'Aquecimento',
-                    speedCue: `Aquecimento ${warmupKmh} KM`,
-                    duration: warmupSecs,
-                    intensity: 'Baixa',
-                    description: 'Trote leve para preparar o corpo.'
-                },
+                workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa'),
                 ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs),
-                {
-                    name: 'Desaquecimento',
-                    speedCue: `REDUZA PARA ${cooldownKmh} KM`,
-                    duration: cooldownSecs,
-                    intensity: 'Baixa',
-                    description: 'Trote leve até o fim.'
-                }
+                warningPhase(`REDUZA PARA ${cooldownKmh} KM`, prepSecs),
+                workPhase(`MANTENHA ${cooldownKmh} KM`, cooldownSecs, 'Baixa', 'Desaquecimento')
             ];
         }
 
         function createMICTWorkout(speedLabel, durationMins = 30) {
             return [
-                {
-                    name: 'Corrida contínua',
-                    speedCue: speedLabel,
-                    duration: durationMins * 60,
-                    intensity: 'Moderada',
-                    description: 'Mantenha o ritmo constante durante todo o tempo.'
-                }
+                workPhase(speedLabel, durationMins * 60, 'Moderada', 'Corrida contínua')
             ];
         }
 
         function createRodagemLeve(durationMins, speedLabel) {
             return [
-                {
-                    name: 'Rodagem regenerativa',
-                    speedCue: speedLabel,
-                    duration: durationMins * 60,
-                    intensity: 'Baixa',
-                    description: 'Rodagem leve e confortável.'
-                }
+                workPhase(speedLabel, durationMins * 60, 'Baixa', 'Rodagem regenerativa')
             ];
         }
 
@@ -1144,9 +1128,10 @@
             const isInfoOnly = workoutConfig.every(phase => phase.infoOnly || phase.duration === 0);
             startBtn.disabled = isInfoOnly;
             if (isInfoOnly && workoutConfig[0]) {
-                currentPhaseName.textContent = workoutConfig[0].name;
-                phaseInstructions.textContent = workoutConfig[0].description;
+                currentPhaseIndex = 0;
+                timeLeft = 0;
                 currentSetDisplay.textContent = 'Sessão presencial — sem temporizador';
+                updateDisplay();
             } else {
                 resetTimer();
             }
@@ -1305,23 +1290,36 @@
 
             if (workoutConfig.length > 0) {
                 const currentPhase = workoutConfig[currentPhaseIndex];
-                const cue = currentPhase.speedCue || currentPhase.name;
-                speedCueDisplay.textContent = cue;
-                speedCueDisplay.style.display = cue ? 'block' : 'none';
-                currentPhaseName.textContent = currentPhase.speedCue && currentPhase.name !== cue
-                    ? currentPhase.name
-                    : '';
-                currentPhaseName.style.display = currentPhaseName.textContent ? 'block' : 'none';
-                phaseInstructions.textContent = currentPhase.description || '';
-                phaseInstructions.classList.toggle('phase-instruction-cue', usingPrescribedPlan && !!currentPhase.description);
-                applyTimerColor(currentPhase.intensity);
+
+                if (usingPrescribedPlan && currentPhase.warning) {
+                    timeLeftDisplay.style.visibility = 'hidden';
+                    currentPhaseName.style.display = 'block';
+                    currentPhaseName.className = 'phase-warning-title';
+                    currentPhaseName.textContent = currentPhase.name;
+                    phaseInstructions.textContent = '';
+                    phaseInstructions.className = 'text-gray-400 text-lg mt-2';
+                } else if (usingPrescribedPlan) {
+                    timeLeftDisplay.style.visibility = 'visible';
+                    currentPhaseName.style.display = 'none';
+                    phaseInstructions.textContent = currentPhase.greenLabel || '';
+                    phaseInstructions.className = 'phase-instruction-cue';
+                    applyTimerColor(currentPhase.intensity);
+                } else {
+                    timeLeftDisplay.style.visibility = 'visible';
+                    currentPhaseName.style.display = 'block';
+                    currentPhaseName.className = 'phase-display';
+                    currentPhaseName.textContent = currentPhase.name;
+                    phaseInstructions.textContent = currentPhase.description || '';
+                    phaseInstructions.className = 'text-gray-400 text-lg mt-2';
+                    applyTimerColor(currentPhase.intensity);
+                }
             } else {
-                speedCueDisplay.textContent = '';
-                speedCueDisplay.style.display = 'none';
-                currentPhaseName.textContent = 'Selecione semana e dia';
+                timeLeftDisplay.style.visibility = 'visible';
                 currentPhaseName.style.display = 'block';
+                currentPhaseName.className = 'phase-display';
+                currentPhaseName.textContent = 'Selecione semana e dia';
                 phaseInstructions.textContent = '';
-                phaseInstructions.classList.remove('phase-instruction-cue');
+                phaseInstructions.className = 'text-gray-400 text-lg mt-2';
                 applyTimerColor(null);
             }
         }
