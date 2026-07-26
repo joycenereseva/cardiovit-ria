@@ -153,10 +153,17 @@
             margin-bottom: 0.5rem;
         }
 
-        .set-display {
-            font-size: 1.5rem;
-            color: var(--cinza);
-            margin-bottom: 2rem;
+        .phase-instruction-cue {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--verde-dark);
+            margin-top: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .phase-instruction-cue {
+                font-size: 1.5rem;
+            }
         }
 
         .timer-controls button {
@@ -723,6 +730,11 @@
 
     <!-- Página do Temporizador de Treino (inicialmente oculta) -->
     <div id="timer-app-page" class="timer-page hidden">
+        <div class="config-section mb-6" style="margin-top: 0; padding: 1rem 1.25rem;">
+            <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--verde)">Como usar</p>
+            <p class="text-sm leading-relaxed" style="color: var(--cinza)">Posicione o seu celular em um lugar visível, ligue a esteira, clique no temporizador e vá acompanhando, os tempos já estão ajustados para você. Só siga a fase que aparecer na tela, em união com a esteira.</p>
+        </div>
+
         <!-- Seletores de Semana e Dia -->
         <div class="config-section mb-8" style="margin-top: 0;">
             <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--preto)">Treino do plano Vitória Cardoso</h2>
@@ -736,11 +748,6 @@
                     <select id="daySelect" class="w-full"></select>
                 </div>
             </div>
-        </div>
-
-        <div class="config-section mb-6" style="margin-top: 0; padding: 1rem 1.25rem;">
-            <p class="text-sm font-bold uppercase tracking-wider mb-2" style="color: var(--verde)">Como usar</p>
-            <p class="text-sm leading-relaxed" style="color: var(--cinza)">Posicione o seu celular em um lugar visível, ligue a esteira, clique no temporizador e vá acompanhando — os tempos já estão ajustados para você. Só siga a fase que aparecer na tela, em união com a esteira.</p>
         </div>
 
         <!-- Área de exibição do temporizador -->
@@ -891,20 +898,23 @@
         // =============================================
         // PLANO DE TREINO DE CORRIDA — VITÓRIA CARDOSO (12 Semanas)
         // =============================================
-        function generateHIIT(sets, activeSecs, restSecs, activeDesc, restDesc) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh) {
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
+                const tiroCue = i === 1
+                    ? `AUMENTE RÁPIDO PARA ${tiroKmh} KM`
+                    : `AUMENTE PARA ${tiroKmh} KM`;
                 intervals.push({
-                    name: `Tiro ${i}/${sets}`,
+                    name: tiroCue,
                     duration: activeSecs,
                     intensity: 'Alta',
-                    description: activeDesc || `Corrida forte (PSE 8-9). Duração: ${activeSecs}s.`
+                    description: `TIRO — ${activeSecs}s`
                 });
                 intervals.push({
-                    name: `Recuperação ${i}/${sets}`,
+                    name: `REDUZA PARA ${recoveryKmh} KM`,
                     duration: restSecs,
                     intensity: 'Baixa',
-                    description: restDesc || `Recuperação ativa (PSE 3-4). Duração: ${restSecs}s.`
+                    description: `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`
                 });
             }
             return intervals;
@@ -912,65 +922,83 @@
 
         function createHIITWorkout(sets, activeSecs, restSecs, options = {}) {
             const {
-                activeDesc,
-                restDesc,
+                tiroKmh = 11,
+                recoveryKmh = 8,
+                warmupKmh = 6,
+                cooldownKmh = 6,
                 warmupSecs = 5 * 60,
-                cooldownSecs = 3 * 60,
-                warmupDesc,
-                cooldownDesc
+                cooldownSecs = 3 * 60
             } = options;
 
             return [
-                { name: 'Aquecimento', duration: warmupSecs, intensity: 'Baixa', description: warmupDesc || 'Trote leve para preparar o corpo.' },
-                ...generateHIIT(sets, activeSecs, restSecs, activeDesc, restDesc),
-                { name: 'Desaquecimento', duration: cooldownSecs, intensity: 'Baixa', description: cooldownDesc || 'Trote leve até o fim.' }
+                {
+                    name: `Aquecimento ${warmupKmh} KM`,
+                    duration: warmupSecs,
+                    intensity: 'Baixa',
+                    description: 'Trote leve para preparar o corpo.'
+                },
+                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh),
+                {
+                    name: `REDUZA PARA ${cooldownKmh} KM`,
+                    duration: cooldownSecs,
+                    intensity: 'Baixa',
+                    description: 'Desaquecimento — trote leve até o fim.'
+                }
             ];
         }
 
-        function createMICTWorkout(speedDesc, durationMins = 30) {
+        function createMICTWorkout(speedLabel, durationMins = 30) {
             return [
-                { name: 'Corrida Contínua (MICT)', duration: durationMins * 60, intensity: 'Moderada', description: speedDesc }
+                {
+                    name: speedLabel,
+                    duration: durationMins * 60,
+                    intensity: 'Moderada',
+                    description: 'Mantenha o ritmo constante durante todo o tempo.'
+                }
             ];
         }
 
-        function createRodagemLeve(durationMins, speedDesc) {
+        function createRodagemLeve(durationMins, speedLabel) {
             return [
-                { name: 'Rodagem Regenerativa', duration: durationMins * 60, intensity: 'Baixa', description: speedDesc }
+                {
+                    name: speedLabel,
+                    duration: durationMins * 60,
+                    intensity: 'Baixa',
+                    description: 'Rodagem leve e confortável.'
+                }
             ];
         }
 
         // Mês 1 — HIIT curto (5 min aquec. + 10×[30s/60s] + 5 min desaq.)
         const hiitCurto = createHIITWorkout(10, 30, 60, {
-            activeDesc: '30s a 11,0 km/h (91–92% vVO₂max)',
-            restDesc: '1 min de caminhada de recuperação a 8,0 km/h',
+            tiroKmh: 11,
+            recoveryKmh: 8,
             cooldownSecs: 5 * 60
         });
-        const mictM1 = createMICTWorkout('30 min contínuos entre 8 e 9,5 km/h (Borg 4–6).');
-        const deloadS4 = createRodagemLeve(28, 'Rodagem bem leve, máximo 9,0 km/h. Regeneração do SNC e adaptação tecidual.');
+        const mictM1 = createMICTWorkout('MICT — MANTENHA 8 a 9,5 KM');
+        const deloadS4 = createRodagemLeve(28, 'RODAGEM LEVE — MÁX. 9 KM');
 
         // Mês 2 — HIIT longo (5 min aquec. + 12×[60s/60s] + 2 min desaq.)
         const hiitLongo = createHIITWorkout(12, 60, 60, {
-            activeDesc: '60s a 11,5–12,0 km/h (95–100% vVO₂max)',
-            restDesc: '60s de caminhada de recuperação (≤ 8,0 km/h)',
+            tiroKmh: 12,
+            recoveryKmh: 8,
             cooldownSecs: 2 * 60
         });
-        const mictM2 = createMICTWorkout('30 min contínuos a 9–10,0 km/h (Limiar Aeróbio, Borg 6–8).');
+        const mictM2 = createMICTWorkout('MICT — MANTENHA 9 a 10 KM');
         const deloadS8 = createHIITWorkout(6, 60, 180, {
-            activeDesc: '1 min a 10,5 km/h (HIIT regenerativo)',
-            restDesc: '3 min de caminhada de recuperação',
-            cooldownSecs: 2 * 60,
-            warmupDesc: 'Trote leve — aquecimento.',
-            cooldownDesc: 'Trote leve — desaquecimento.'
+            tiroKmh: '10,5',
+            recoveryKmh: 8,
+            cooldownSecs: 2 * 60
         });
 
         // Mês 3 — HIIT alta densidade (5 min aquec. + 20×[30s/30s] + 3 min desaq.)
         const hiitDenso = createHIITWorkout(20, 30, 30, {
-            activeDesc: '30s forte a 12,0 km/h (100% vVO₂max)',
-            restDesc: '30s de pausa/caminhada de recuperação',
+            tiroKmh: 12,
+            recoveryKmh: 8,
             cooldownSecs: 3 * 60
         });
-        const mictM3 = createMICTWorkout('30 min contínuos sustentados a 10,0 km/h.');
-        const deloadS12Ter = createRodagemLeve(20, 'Rodagem regenerativa a 9,0 km/h.');
+        const mictM3 = createMICTWorkout('MICT — MANTENHA 10 KM');
+        const deloadS12Ter = createRodagemLeve(20, 'RODAGEM LEVE — 9 KM');
         const reavaliacao = [
             {
                 name: 'Reavaliação presencial',
