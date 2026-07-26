@@ -927,43 +927,49 @@
         // =============================================
         // PLANO DE TREINO DE CORRIDA — VITÓRIA CARDOSO (12 Semanas)
         // =============================================
-        function warningPhase(message, duration) {
+        function warningPhase(message, duration, meta = {}) {
             return {
                 warning: true,
                 name: message,
                 duration,
-                intensity: 'Aviso'
+                intensity: 'Aviso',
+                ...meta
             };
         }
 
-        function workPhase(greenLabel, duration, intensity, phaseLabel = '') {
+        function workPhase(greenLabel, duration, intensity, phaseLabel = '', meta = {}) {
             return {
                 name: phaseLabel,
                 greenLabel,
                 duration,
-                intensity
+                intensity,
+                ...meta
             };
         }
 
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4, tiroMaintainLabel = null) {
+            const maintainLabel = tiroMaintainLabel || `MANTENHA ${tiroKmh} KM`;
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
                 const tiroCue = i === 1
                     ? `AUMENTE RÁPIDO PARA ${tiroKmh} KM`
                     : `AUMENTE PARA ${tiroKmh} KM`;
-                intervals.push(warningPhase(tiroCue, prepSecs));
+                const setMeta = { setIndex: i, setTotal: sets };
+                intervals.push(warningPhase(tiroCue, prepSecs, { ...setMeta, segment: 'prep-tiro' }));
                 intervals.push(workPhase(
-                    `MANTENHA ${tiroKmh} KM`,
+                    maintainLabel,
                     activeSecs,
                     'Alta',
-                    `TIRO — ${activeSecs}s`
+                    `TIRO ${i}/${sets} — ${activeSecs}s`,
+                    { ...setMeta, segment: 'tiro' }
                 ));
-                intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs));
+                intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs, { ...setMeta, segment: 'prep-recovery' }));
                 intervals.push(workPhase(
                     `MANTENHA ${recoveryKmh} KM`,
                     restSecs,
                     'Baixa',
-                    `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`
+                    `RECUPERAÇÃO ${i}/${sets} — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
+                    { ...setMeta, segment: 'recovery' }
                 ));
             }
             return intervals;
@@ -972,6 +978,7 @@
         function createHIITWorkout(sets, activeSecs, restSecs, options = {}) {
             const {
                 tiroKmh = 11,
+                tiroMaintainLabel = null,
                 recoveryKmh = 8,
                 warmupKmh = 6,
                 cooldownKmh = 6,
@@ -981,37 +988,68 @@
             } = options;
 
             return [
-                workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa'),
-                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs),
-                warningPhase(`REDUZA PARA ${cooldownKmh} KM`, prepSecs),
-                workPhase(`MANTENHA ${cooldownKmh} KM`, cooldownSecs, 'Baixa', 'Desaquecimento')
+                workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa', '', { segment: 'warmup' }),
+                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs, tiroMaintainLabel),
+                warningPhase(`REDUZA PARA ${cooldownKmh} KM`, prepSecs, { segment: 'prep-cooldown' }),
+                workPhase(`MANTENHA ${cooldownKmh} KM`, cooldownSecs, 'Baixa', 'Desaquecimento', { segment: 'cooldown' })
             ];
         }
 
         function createMICTWorkout(speedLabel, durationMins = 30) {
             return [
-                workPhase(speedLabel, durationMins * 60, 'Moderada', 'Corrida contínua')
+                workPhase(speedLabel, durationMins * 60, 'Moderada', 'Corrida contínua', { segment: 'continuous' })
             ];
         }
 
         function createRodagemLeve(durationMins, speedLabel) {
             return [
-                workPhase(speedLabel, durationMins * 60, 'Baixa', 'Rodagem regenerativa')
+                workPhase(speedLabel, durationMins * 60, 'Baixa', 'Rodagem regenerativa', { segment: 'regenerative' })
             ];
         }
 
-        // Mês 1 — HIIT curto (5 min aquec. + 10×[30s/60s] + 5 min desaq.)
+        function getPrescribedProgressText(currentPhase) {
+            if (currentPhase.infoOnly) {
+                return 'Reavaliação presencial';
+            }
+
+            const { segment, setIndex, setTotal } = currentPhase;
+
+            switch (segment) {
+                case 'warmup':
+                    return 'Aquecimento';
+                case 'prep-cooldown':
+                case 'cooldown':
+                    return 'Desaquecimento';
+                case 'prep-tiro':
+                    return `Preparar · Tiro ${setIndex}/${setTotal}`;
+                case 'tiro':
+                    return `Tiro ${setIndex}/${setTotal}`;
+                case 'prep-recovery':
+                    return `Preparar · Recuperação ${setIndex}/${setTotal}`;
+                case 'recovery':
+                    return `Recuperação ${setIndex}/${setTotal}`;
+                case 'continuous':
+                    return 'MICT — corrida contínua';
+                case 'regenerative':
+                    return 'Rodagem regenerativa';
+                default:
+                    return '';
+            }
+        }
+
+        // Mês 1 — aquec. 6 km + 10×(30s tiro / 60s rec.) + desaq. 5 min
         const hiitCurto = createHIITWorkout(10, 30, 60, {
-            tiroKmh: 11,
+            tiroKmh: '11,0',
             recoveryKmh: 8,
             cooldownSecs: 5 * 60
         });
         const mictM1 = createMICTWorkout('MICT — MANTENHA 8 a 9,5 KM');
         const deloadS4 = createRodagemLeve(28, 'RODAGEM LEVE — MÁX. 9 KM');
 
-        // Mês 2 — HIIT longo (5 min aquec. + 12×[60s/60s] + 2 min desaq.)
+        // Mês 2 — aquec. 6 km + 12×(60s/60s) + desaq. 2 min
         const hiitLongo = createHIITWorkout(12, 60, 60, {
-            tiroKmh: 12,
+            tiroKmh: '11,5',
+            tiroMaintainLabel: 'MANTENHA 11,5 a 12 KM',
             recoveryKmh: 8,
             cooldownSecs: 2 * 60
         });
@@ -1022,9 +1060,9 @@
             cooldownSecs: 2 * 60
         });
 
-        // Mês 3 — HIIT alta densidade (5 min aquec. + 20×[30s/30s] + 3 min desaq.)
+        // Mês 3 — aquec. 6 km + 20×(30s/30s) + desaq. 3 min
         const hiitDenso = createHIITWorkout(20, 30, 30, {
-            tiroKmh: 12,
+            tiroKmh: '12,0',
             recoveryKmh: 8,
             cooldownSecs: 3 * 60
         });
@@ -1285,9 +1323,15 @@
 
         function updateDisplay() {
             const totalSets = parseInt(numSetsInput.value);
-            if (usingPrescribedPlan && workoutConfig.length > 0) {
-                const phaseNum = Math.min(currentPhaseIndex + 1, workoutConfig.length);
-                currentSetDisplay.textContent = `Fase: ${phaseNum}/${workoutConfig.length}`;
+            if (workoutConfig.length > 0) {
+                const currentPhase = workoutConfig[currentPhaseIndex];
+                if (usingPrescribedPlan) {
+                    currentSetDisplay.textContent = getPrescribedProgressText(currentPhase);
+                } else {
+                    currentSetDisplay.textContent = `Série: ${currentSet}/${totalSets}`;
+                }
+            } else if (usingPrescribedPlan) {
+                currentSetDisplay.textContent = 'Selecione semana e dia';
             } else {
                 currentSetDisplay.textContent = `Série: ${currentSet}/${totalSets}`;
             }
