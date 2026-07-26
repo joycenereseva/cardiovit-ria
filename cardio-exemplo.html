@@ -146,11 +146,33 @@
             margin-bottom: 1rem;
         }
 
+        .speed-cue-display {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--verde-dark);
+            margin-bottom: 0.75rem;
+            min-height: 2.5rem;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
+        }
+
+        @media (min-width: 768px) {
+            .speed-cue-display {
+                font-size: 2.25rem;
+            }
+        }
+
         .phase-display {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--preto);
             margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .phase-display {
+                font-size: 2rem;
+            }
         }
 
         .phase-instruction-cue {
@@ -757,7 +779,8 @@
         </div>
 
         <!-- Área de exibição do temporizador -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-8 w-full max-w-2xl">
+            <p class="speed-cue-display" id="speedCueDisplay"></p>
             <p class="phase-display" id="currentPhaseName">Selecione semana e dia</p>
             <p class="timer-display text-gray-200" id="timeLeftDisplay">00:00</p>
             <p class="text-gray-400 text-lg mt-2" id="phaseInstructions"></p>
@@ -881,6 +904,7 @@
         const backToInfographicBtn = document.getElementById('backToInfographicBtn');
 
         const currentPhaseName = document.getElementById('currentPhaseName');
+        const speedCueDisplay = document.getElementById('speedCueDisplay');
         const timeLeftDisplay = document.getElementById('timeLeftDisplay');
         const phaseInstructions = document.getElementById('phaseInstructions');
         const currentSetDisplay = document.getElementById('currentSetDisplay');
@@ -904,23 +928,32 @@
         // =============================================
         // PLANO DE TREINO DE CORRIDA — VITÓRIA CARDOSO (12 Semanas)
         // =============================================
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 5) {
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
                 const tiroCue = i === 1
                     ? `AUMENTE RÁPIDO PARA ${tiroKmh} KM`
                     : `AUMENTE PARA ${tiroKmh} KM`;
                 intervals.push({
-                    name: tiroCue,
-                    duration: activeSecs,
-                    intensity: 'Alta',
-                    description: `TIRO — ${activeSecs}s`
+                    name: 'Prepare a esteira',
+                    speedCue: tiroCue,
+                    duration: prepSecs,
+                    intensity: 'Moderada',
+                    description: 'Ajuste a velocidade — o tiro começa ao zerar.'
                 });
                 intervals.push({
-                    name: `REDUZA PARA ${recoveryKmh} KM`,
+                    name: `TIRO — ${activeSecs}s`,
+                    speedCue: tiroCue,
+                    duration: activeSecs,
+                    intensity: 'Alta',
+                    description: `MANTENHA ${tiroKmh} KM`
+                });
+                intervals.push({
+                    name: `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
+                    speedCue: `REDUZA PARA ${recoveryKmh} KM`,
                     duration: restSecs,
                     intensity: 'Baixa',
-                    description: `RECUPERAÇÃO — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`
+                    description: 'Recupere o fôlego ativamente.'
                 });
             }
             return intervals;
@@ -933,22 +966,25 @@
                 warmupKmh = 6,
                 cooldownKmh = 6,
                 warmupSecs = 5 * 60,
-                cooldownSecs = 3 * 60
+                cooldownSecs = 3 * 60,
+                prepSecs = 5
             } = options;
 
             return [
                 {
-                    name: `Aquecimento ${warmupKmh} KM`,
+                    name: 'Aquecimento',
+                    speedCue: `Aquecimento ${warmupKmh} KM`,
                     duration: warmupSecs,
                     intensity: 'Baixa',
                     description: 'Trote leve para preparar o corpo.'
                 },
-                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh),
+                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs),
                 {
-                    name: `REDUZA PARA ${cooldownKmh} KM`,
+                    name: 'Desaquecimento',
+                    speedCue: `REDUZA PARA ${cooldownKmh} KM`,
                     duration: cooldownSecs,
                     intensity: 'Baixa',
-                    description: 'Desaquecimento — trote leve até o fim.'
+                    description: 'Trote leve até o fim.'
                 }
             ];
         }
@@ -956,7 +992,8 @@
         function createMICTWorkout(speedLabel, durationMins = 30) {
             return [
                 {
-                    name: speedLabel,
+                    name: 'Corrida contínua',
+                    speedCue: speedLabel,
                     duration: durationMins * 60,
                     intensity: 'Moderada',
                     description: 'Mantenha o ritmo constante durante todo o tempo.'
@@ -967,7 +1004,8 @@
         function createRodagemLeve(durationMins, speedLabel) {
             return [
                 {
-                    name: speedLabel,
+                    name: 'Rodagem regenerativa',
+                    speedCue: speedLabel,
                     duration: durationMins * 60,
                     intensity: 'Baixa',
                     description: 'Rodagem leve e confortável.'
@@ -1267,12 +1305,21 @@
 
             if (workoutConfig.length > 0) {
                 const currentPhase = workoutConfig[currentPhaseIndex];
-                currentPhaseName.textContent = currentPhase.name;
+                const cue = currentPhase.speedCue || currentPhase.name;
+                speedCueDisplay.textContent = cue;
+                speedCueDisplay.style.display = cue ? 'block' : 'none';
+                currentPhaseName.textContent = currentPhase.speedCue && currentPhase.name !== cue
+                    ? currentPhase.name
+                    : '';
+                currentPhaseName.style.display = currentPhaseName.textContent ? 'block' : 'none';
                 phaseInstructions.textContent = currentPhase.description || '';
                 phaseInstructions.classList.toggle('phase-instruction-cue', usingPrescribedPlan && !!currentPhase.description);
                 applyTimerColor(currentPhase.intensity);
             } else {
+                speedCueDisplay.textContent = '';
+                speedCueDisplay.style.display = 'none';
                 currentPhaseName.textContent = 'Selecione semana e dia';
+                currentPhaseName.style.display = 'block';
                 phaseInstructions.textContent = '';
                 phaseInstructions.classList.remove('phase-instruction-cue');
                 applyTimerColor(null);
