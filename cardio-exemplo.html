@@ -947,7 +947,7 @@
             };
         }
 
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 4, tiroMaintainLabel = null, cooldownOptions = null) {
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 8, tiroMaintainLabel = null, cooldownOptions = null) {
             const maintainLabel = tiroMaintainLabel || `MANTENHA ${tiroKmh} KM`;
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
@@ -1000,7 +1000,7 @@
                 cooldownLabel = 'VOLTA A CALMA 6KM',
                 warmupSecs = 5 * 60,
                 cooldownSecs = 5 * 60,
-                prepSecs = 4,
+                prepSecs = 8,
                 includeVoltaACalma = true
             } = options;
 
