@@ -644,12 +644,12 @@
                 <div class="card p-6 rounded-lg shadow-lg">
                     <div class="icon text-4xl mb-3">🏗️</div>
                     <h3 class="font-bold text-xl mb-2">Mês 1: Adaptação e densidade inicial (Semanas 1 a 4)</h3>
-                    <p class="text-gray-400 mb-4">Foco: Habituar o SNC às transições rápidas e preparar o maquinário enzimático/mitocondrial sem gerar sobrecarga articular.</p>
+                    <p class="text-gray-400 mb-4">Foco: Habituar o SNC às transições com segurança na esteira, priorizando completar a sessão de forma consistente.</p>
 
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Terça e quinta (HIIT curto — relação 1:2 inicial)</h4>
                     <ul class="list-disc list-inside text-gray-400 space-y-1 mb-4">
                         <li><strong>Tempo total:</strong> 28 a 30 minutos.</li>
-                        <li><strong>Estrutura:</strong> 10 tiros de 30s a 11,0 km/h (91–92% da vVO₂max) por 1 min de caminhada de recuperação a 8 km/h.</li>
+                        <li><strong>Estrutura:</strong> 10 tiros de 40s a 10,0 km/h por 1 min de trote leve de recuperação (6 a 7 km/h).</li>
                     </ul>
 
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Sábado (MICT — cardio moderado)</h4>
@@ -673,7 +673,7 @@
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Terça e quinta (HIIT longo — relação 1:1 expandida)</h4>
                     <ul class="list-disc list-inside text-gray-400 space-y-1 mb-4">
                         <li><strong>Tempo total:</strong> 30 minutos.</li>
-                        <li><strong>Estrutura:</strong> 12 tiros de 60s (1 min) a 11,5–12,0 km/h (95–100% da vVO₂max) por 60s (1 min) de caminhada de recuperação (≤ 8,0 km/h).</li>
+                        <li><strong>Estrutura:</strong> 12 tiros de 60s (1 min) a 11,5–12,0 km/h (95–100% da vVO₂max) por 60s (1 min) de trote leve de recuperação (6 a 8 km/h).</li>
                     </ul>
 
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Sábado (MICT — cardio moderado)</h4>
@@ -684,7 +684,7 @@
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--verde-dark)">Semana 8 (deload programado)</h4>
                     <ul class="list-disc list-inside text-gray-400 space-y-1">
                         <li><strong>Redução de carga:</strong> 2 sessões na semana (terça e sábado).</li>
-                        <li><strong>Sessão:</strong> 25 a 30 minutos totais de HIIT regenerativo → 6 tiros de 1 min a 10,5 km/h por 3 min de caminhada de recuperação.</li>
+                        <li><strong>Sessão:</strong> 25 a 30 minutos totais de HIIT regenerativo → 6 tiros de 1 min a 10,5 km/h por 3 min de trote leve de recuperação (6 a 8 km/h).</li>
                     </ul>
                 </div>
 
@@ -697,7 +697,7 @@
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Terça e quinta (HIIT de alta densidade — relação 1:1)</h4>
                     <ul class="list-disc list-inside text-gray-400 space-y-1 mb-4">
                         <li><strong>Tempo total:</strong> 25 a 30 minutos.</li>
-                        <li><strong>Estrutura:</strong> 20 tiros de 30s forte a 12,0 km/h (100% da vVO₂max) para 30s de pausa/caminhada de recuperação.</li>
+                        <li><strong>Estrutura:</strong> 20 tiros de 30s forte a 12,0 km/h (100% da vVO₂max) para 30s de trote leve de recuperação (6 a 8 km/h).</li>
                     </ul>
 
                     <h4 class="font-semibold text-lg mb-2" style="color: var(--preto)">Sábado (MICT — cardio moderado)</h4>
@@ -947,8 +947,20 @@
             };
         }
 
-        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs = 8, tiroMaintainLabel = null, cooldownOptions = null) {
+        const RECOVERY_TROTE_6_8 = {
+            reduceLabel: 'REDUZA PARA TROTE LEVE (6 A 8 KM)',
+            maintainLabel: 'TROTE LEVE DE RECUPERAÇÃO 6 A 8 KM'
+        };
+
+        const RECOVERY_TROTE_6_7 = {
+            reduceLabel: 'REDUZA PARA TROTE LEVE (6 A 7 KM)',
+            maintainLabel: 'TROTE LEVE DE RECUPERAÇÃO 6 A 7 KM'
+        };
+
+        function generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryLabels, prepSecs = 8, tiroMaintainLabel = null, cooldownOptions = null) {
             const maintainLabel = tiroMaintainLabel || `MANTENHA ${tiroKmh} KM`;
+            const recoveryReduceLabel = recoveryLabels.reduceLabel;
+            const recoveryMaintainLabel = recoveryLabels.maintainLabel;
             let intervals = [];
             for (let i = 1; i <= sets; i++) {
                 const tiroCue = i === 1
@@ -964,9 +976,9 @@
                     { ...setMeta, segment: 'tiro' }
                 ));
                 if (i < sets) {
-                    intervals.push(warningPhase(`REDUZA PARA ${recoveryKmh} KM`, prepSecs, { ...setMeta, segment: 'prep-recovery' }));
+                    intervals.push(warningPhase(recoveryReduceLabel, prepSecs, { ...setMeta, segment: 'prep-recovery' }));
                     intervals.push(workPhase(
-                        `MANTENHA ${recoveryKmh} KM`,
+                        recoveryMaintainLabel,
                         restSecs,
                         'Baixa',
                         `RECUPERAÇÃO ${i}/${sets} — ${restSecs >= 60 ? `${Math.floor(restSecs / 60)} min` : `${restSecs}s`}`,
@@ -994,7 +1006,7 @@
             const {
                 tiroKmh = 11,
                 tiroMaintainLabel = null,
-                recoveryKmh = 8,
+                recoveryLabels = RECOVERY_TROTE_6_8,
                 warmupKmh = 6,
                 cooldownKmh = 6,
                 cooldownLabel = 'VOLTA A CALMA 6KM',
@@ -1010,7 +1022,7 @@
 
             return [
                 workPhase(`AQUECIMENTO ${warmupKmh} KM`, warmupSecs, 'Baixa', '', { segment: 'warmup' }),
-                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryKmh, prepSecs, tiroMaintainLabel, cooldownOptions)
+                ...generateHIIT(sets, activeSecs, restSecs, tiroKmh, recoveryLabels, prepSecs, tiroMaintainLabel, cooldownOptions)
             ];
         }
 
@@ -1058,10 +1070,10 @@
             }
         }
 
-        // Mês 1 — aquec. 6 km + 10×(30s tiro / 60s rec.) + desaq. 5 min
-        const hiitCurto = createHIITWorkout(10, 30, 60, {
-            tiroKmh: '11,0',
-            recoveryKmh: 8
+        // Mês 1 — aquec. 6 km + 10×(40s tiro / 60s rec. 6-7 km/h) + volta à calma 5 min
+        const hiitCurto = createHIITWorkout(10, 40, 60, {
+            tiroKmh: '10,0',
+            recoveryLabels: RECOVERY_TROTE_6_7
         });
         const mictM1 = createMICTWorkout('MICT — MANTENHA 8 a 9,5 KM');
         const deloadS4 = createRodagemLeve(28, 'RODAGEM LEVE — MÁX. 9 KM');
@@ -1069,19 +1081,16 @@
         // Mês 2 — aquec. 6 km + 12×(60s/60s) + desaq. 2 min
         const hiitLongo = createHIITWorkout(12, 60, 60, {
             tiroKmh: '11,5',
-            tiroMaintainLabel: 'MANTENHA 11,5 a 12 KM',
-            recoveryKmh: 8
+            tiroMaintainLabel: 'MANTENHA 11,5 a 12 KM'
         });
         const mictM2 = createMICTWorkout('MICT — MANTENHA 9 a 10 KM');
         const deloadS8 = createHIITWorkout(6, 60, 180, {
-            tiroKmh: '10,5',
-            recoveryKmh: 8
+            tiroKmh: '10,5'
         });
 
-        // Mês 3 — aquec. 6 km + 20×(30s/30s) + desaq. 3 min
+        // Mês 3 — aquec. 6 km + 20×(30s/30s) + volta à calma 5 min
         const hiitDenso = createHIITWorkout(20, 30, 30, {
-            tiroKmh: '12,0',
-            recoveryKmh: 8
+            tiroKmh: '12,0'
         });
         const mictM3 = createMICTWorkout('MICT — MANTENHA 10 KM');
         const deloadS12Ter = createRodagemLeve(20, 'RODAGEM LEVE — 9 KM');
